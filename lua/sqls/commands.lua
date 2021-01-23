@@ -12,18 +12,8 @@ local function show_results_handler(mods)
     end
 end
 
-local not_implemented = {
-    showTables = true,
-    describeTable = true,
-}
-
 local function make_command_executor(command)
     return function(mods, is_visual_mode)
-        if not_implemented[command] then
-            print(('Not implemented: %s'):format(command))
-            return
-        end
-
         vim.lsp.buf_request(
             0,
             'workspace/executeCommand',
