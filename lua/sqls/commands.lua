@@ -14,14 +14,14 @@ local function show_results_handler(mods)
 end
 
 local function make_command_executor(command)
-    return function(mods, is_visual_mode)
+    return function(mods, range_given)
         vim.lsp.buf_request(
             0,
             'workspace/executeCommand',
             {
                 command = command,
                 arguments = {vim.uri_from_bufnr(0)},
-                range = is_visual_mode and vim.lsp.util.make_given_range_params().range or nil,
+                range = range_given and vim.lsp.util.make_given_range_params().range or nil,
             },
             show_results_handler(mods)
             )
@@ -46,13 +46,13 @@ local function choice_handler(switch_function, answer_formatter)
 end
 
 local function make_switch_function(command)
-    return function(object_name)
+    return function(query)
         vim.lsp.buf_request(
             0,
             'workspace/executeCommand',
             {
                 command = command,
-                arguments = {object_name},
+                arguments = {query},
             },
             function(err, _, _, _, _, _)
                 assert(not err, err and err.message)
@@ -83,12 +83,12 @@ local database_prompt_function = make_prompt_function('showDatabases', format_da
 local connection_prompt_function = make_prompt_function('showConnections', format_connection_answer)
 
 local function make_switcher(prompt_function, switch_function)
-    return function(object_name)
-        if not object_name then
+    return function(query)
+        if not query then
             prompt_function(switch_function)
             return
         end
-        switch_function(object_name)
+        switch_function(query)
     end
 end
 
