@@ -9,6 +9,7 @@ local function show_results_handler(mods)
         api.nvim_buf_set_lines(bufnr, 0, 1, false, vim.split(result, '\n'))
         vim.cmd(('%s split'):format(mods or ''))
         api.nvim_win_set_buf(0, bufnr)
+        api.nvim_win_set_option(0, 'wrap', false)
     end
 end
 
