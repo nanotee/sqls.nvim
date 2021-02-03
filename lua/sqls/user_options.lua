@@ -1,14 +1,13 @@
 local M = {}
 
-local pickers = require('sqls.pickers')
 
 function M.init(opts)
-    if opts.picker == 'fzf' then
-        M.picker = pickers.fzf
-    elseif opts.picker == 'telescope' then
-        M.picker = pickers.telescope
-    else
-        M.picker = pickers.default
+    function M.picker(...)
+        local pickers = require('sqls.pickers')
+        if pickers[opts.picker] then
+            return pickers[opts.picker](...)
+        end
+        return pickers.default(...)
     end
 end
 
