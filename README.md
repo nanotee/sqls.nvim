@@ -52,5 +52,6 @@ require'sqls'.setup{
                         -- Available pickers:
                         -- - `default`: basic picker based on `inputlist()`
                         -- - `fzf`: requires the `fzf.vim` script
+                        -- - `telescope`: requires the `telescope.nvim` plugin
 }
 ```
