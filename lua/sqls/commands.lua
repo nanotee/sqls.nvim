@@ -1,5 +1,7 @@
 local api = vim.api
 
+local user_options = require('sqls.user_options')
+
 local M = {}
 
 local function show_results_handler(mods)
@@ -39,9 +41,7 @@ local function choice_handler(switch_function, answer_formatter)
     return function(err, _, result, _, _, _, _)
         assert(not err, err and err.message)
         local choices = vim.split(result, '\n')
-        local answer = vim.fn.inputlist(choices)
-        if not choices[answer] then return end
-        switch_function(answer_formatter(choices, answer))
+        user_options.picker(switch_function, answer_formatter, choices)
     end
 end
 
@@ -74,8 +74,8 @@ local function make_prompt_function(command, answer_formatter)
     end
 end
 
-local function format_database_answer(choices, answer) return choices[answer] end
-local function format_connection_answer(_, answer) return tostring(answer) end
+local function format_database_answer(answer) return answer end
+local function format_connection_answer(answer) return vim.split(answer, ' ')[1] end
 
 local database_switch_function = make_switch_function('switchDatabase')
 local connection_switch_function = make_switch_function('switchConnections')

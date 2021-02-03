@@ -41,3 +41,16 @@ Available commands:
 - `:SqlsSwitchConnection {connection_index}`: Switches to a different database connection. If {connection_index} is omitted, displays an interactive prompt to select a connection.
 
 Commands using a preview buffer also support modifiers like `:vertical` or `:tab`.
+
+## Configuration
+
+The plugin can be configured by passing a table to the `setup()` function. Available options:
+
+```lua
+require'sqls'.setup{
+    picker = 'default', -- Picker for choosing a database or a connection.
+                        -- Available pickers:
+                        -- - `default`: basic picker based on `inputlist()`
+                        -- - `fzf`: requires the `fzf.vim` script
+}
+```
