@@ -7,10 +7,17 @@ function M.default(switch_function, answer_formatter, choices)
 end
 
 function M.fzf(switch_function, answer_formatter, choices)
-    local function callback(answer)
-        switch_function(answer_formatter(answer))
+    assert(vim.g.loaded_fzf == 1, 'The fzf.vim plugin must be installed')
+
+    local fzf_wrapped_options = vim.fn['fzf#wrap']('sqls', {
+            source = choices,
+            options = {'--prompt=sqls.nvim>'}
+        })
+    fzf_wrapped_options['sink*'] = function(answer)
+        switch_function(answer_formatter(answer[2]))
     end
-    vim.fn['sqls_nvim#pickers#fzf'](choices, callback)
+
+    vim.fn['fzf#run'](fzf_wrapped_options)
 end
 
 function M.telescope(switch_function, answer_formatter, choices)
