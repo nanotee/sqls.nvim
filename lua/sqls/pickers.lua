@@ -1,12 +1,12 @@
 local M = {}
 
-function M.default(switch_function, answer_formatter, choices)
+function M.default(switch_callback, choices)
     local answer = vim.fn.inputlist(choices)
     if not choices[answer] then return end
-    switch_function(answer_formatter(choices[answer]))
+    switch_callback(choices[answer])
 end
 
-function M.fzf(switch_function, answer_formatter, choices)
+function M.fzf(switch_callback, choices)
     assert(vim.g.loaded_fzf == 1, 'The fzf.vim plugin must be installed')
 
     local fzf_wrapped_options = vim.fn['fzf#wrap']('sqls', {
@@ -14,13 +14,13 @@ function M.fzf(switch_function, answer_formatter, choices)
             options = {'--prompt=sqls.nvim>'}
         })
     fzf_wrapped_options['sink*'] = function(answer)
-        switch_function(answer_formatter(answer[2]))
+        switch_callback(answer[2])
     end
 
     vim.fn['fzf#run'](fzf_wrapped_options)
 end
 
-function M.telescope(switch_function, answer_formatter, choices)
+function M.telescope(switch_callback, choices)
     local telescope_loaded, _ = pcall(require, 'telescope')
     assert(telescope_loaded, 'The telescope.nvim plugin must be installed')
     local pickers = require('telescope.pickers')
@@ -37,7 +37,7 @@ function M.telescope(switch_function, answer_formatter, choices)
                 actions.goto_file_selection_edit:replace(function()
                     local selection = actions.get_selected_entry()
                     actions.close(prompt_bufnr)
-                    switch_function(answer_formatter(selection.value))
+                    switch_callback(selection.value)
                 end)
 
                 return true
