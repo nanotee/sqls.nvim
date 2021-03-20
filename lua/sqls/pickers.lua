@@ -34,7 +34,7 @@ function M.telescope(switch_callback, choices)
             },
             sorter = conf.generic_sorter({}),
             attach_mappings = function(prompt_bufnr)
-                actions.goto_file_selection_edit:replace(function()
+                actions.select_default:replace(function()
                     local selection = actions.get_selected_entry()
                     actions.close(prompt_bufnr)
                     switch_callback(selection.value)
