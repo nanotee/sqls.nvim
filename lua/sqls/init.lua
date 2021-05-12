@@ -4,6 +4,7 @@ return {
         user_options.init(opts or {})
 
         vim.cmd [[command! -buffer -range SqlsExecuteQuery lua require'sqls.commands'.execute_query('<mods>', <range> ~= 0)]]
+        vim.cmd [[command! -buffer -range SqlsExecuteQueryVertical lua require'sqls.commands'.execute_query('<mods>', <range> ~= 0, '-show-vertical')]]
         vim.cmd [[command! -buffer SqlsShowDatabases lua require'sqls.commands'.show_databases('<mods>')]]
         vim.cmd [[command! -buffer SqlsShowSchemas lua require'sqls.commands'.show_schemas('<mods>')]]
         vim.cmd [[command! -buffer SqlsShowConnections lua require'sqls.commands'.show_connections('<mods>')]]

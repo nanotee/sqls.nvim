@@ -34,6 +34,7 @@ require'lspconfig'.sqls.setup{
 Available commands:
 
 - `:SqlsExecuteQuery`: In normal mode, executes the query in the current buffer. In visual mode, executes the selected query. Shows the results in a preview buffer.
+- `:SqlsExecuteQueryVertical`: Same as `:SqlsExecuteQuery`, but the results are displayed vertically.
 - `:SqlsShowDatabases`: Shows a list of available databases in a preview buffer.
 - `:SqlsShowSchemas`: Shows a list of available schemas in a preview buffer.
 - `:SqlsShowConnections`: Shows a list of available database connections in a preview buffer.

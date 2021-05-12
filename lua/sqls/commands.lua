@@ -16,13 +16,13 @@ local function show_results_handler(mods)
 end
 
 local function make_command_executor(command)
-    return function(mods, range_given)
+    return function(mods, range_given, show_vertical)
         vim.lsp.buf_request(
             0,
             'workspace/executeCommand',
             {
                 command = command,
-                arguments = {vim.uri_from_bufnr(0)},
+                arguments = {vim.uri_from_bufnr(0), show_vertical},
                 range = range_given and vim.lsp.util.make_given_range_params().range or nil,
             },
             show_results_handler(mods)
