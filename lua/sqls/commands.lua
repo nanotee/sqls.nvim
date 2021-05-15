@@ -1,6 +1,6 @@
 local api = vim.api
 
-local user_options = require('sqls.user_options')
+local user_options = require('sqls')._user_options
 
 local M = {}
 
