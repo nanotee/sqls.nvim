@@ -1,4 +1,5 @@
 local api = vim.api
+local fn = vim.fn
 
 local user_options = require('sqls')._user_options
 
@@ -7,11 +8,11 @@ local M = {}
 local function show_results_handler(mods)
     return function(err, _, result, _, _, _, _)
         assert(not err, err and err.message)
-        local bufnr = api.nvim_create_buf(false, true)
+        local tempfile = fn.tempname() .. '.sqls_output'
+        local bufnr = fn.bufnr(tempfile, true)
         api.nvim_buf_set_lines(bufnr, 0, 1, false, vim.split(result, '\n'))
-        vim.cmd(('%s split'):format(mods or ''))
-        api.nvim_win_set_buf(0, bufnr)
-        api.nvim_win_set_option(0, 'wrap', false)
+        vim.cmd(('%s pedit %s'):format(mods or '', tempfile))
+        api.nvim_buf_set_option(bufnr, 'filetype', 'sqls_output')
     end
 end
 
