@@ -18,6 +18,11 @@ M.setup = function(opts)
     -- vim.cmd [[command! -buffer SqlsDescribeTable lua require'sqls.commands'.exec('describeTable', '<mods>')]]
     vim.cmd [[command! -buffer -nargs=? SqlsSwitchDatabase lua require'sqls.commands'.switch_database(<f-args>)]]
     vim.cmd [[command! -buffer -nargs=? SqlsSwitchConnection lua require'sqls.commands'.switch_connection(<f-args>)]]
+
+    vim.api.nvim_buf_set_keymap(0, 'n', '<Plug>(sqls-execute-query)', "<Cmd>set opfunc=v:lua.require'sqls.commands'.query<CR>g@", {silent = true})
+    vim.api.nvim_buf_set_keymap(0, 'x', '<Plug>(sqls-execute-query)', "<Cmd>set opfunc=v:lua.require'sqls.commands'.query<CR>g@", {silent = true})
+    vim.api.nvim_buf_set_keymap(0, 'n', '<Plug>(sqls-execute-query-vertical)', "<Cmd>set opfunc=v:lua.require'sqls.commands'.query_vertical<CR>g@", {silent = true})
+    vim.api.nvim_buf_set_keymap(0, 'x', '<Plug>(sqls-execute-query-vertical)', "<Cmd>set opfunc=v:lua.require'sqls.commands'.query_vertical<CR>g@", {silent = true})
 end
 
 return M

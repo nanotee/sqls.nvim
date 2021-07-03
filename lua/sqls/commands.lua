@@ -35,6 +35,37 @@ function M.exec(command, mods, range_given, show_vertical, line1, line2)
         )
 end
 
+local function make_query_mapping(show_vertical)
+    return function(type)
+        local range
+        local _, lnum1, col1, _ = unpack(fn.getpos("'["))
+        local _, lnum2, col2, _ = unpack(fn.getpos("']"))
+        if type == 'block' then
+            vim.api.nvim_err_writeln("sqls doesn't support block-wise ranges!")
+            return
+        elseif type == 'line' then
+            range = vim.lsp.util.make_given_range_params({lnum1, 0}, {lnum2, math.huge}).range
+            range['end'].character = range['end'].character - 1
+        elseif type == 'char' then
+            range = vim.lsp.util.make_given_range_params({lnum1, col1 - 1}, {lnum2, col2 - 1}).range
+        end
+
+        vim.lsp.buf_request(
+            0,
+            'workspace/executeCommand',
+            {
+                command = 'executeQuery',
+                arguments = {vim.uri_from_bufnr(0), show_vertical},
+                range = range,
+            },
+            show_results_handler('')
+            )
+    end
+end
+
+M.query = make_query_mapping()
+M.query_vertical = make_query_mapping('-show-vertical')
+
 local function choice_handler(switch_function, answer_formatter)
     return function(err, _, result, _, _, _, _)
         assert(not err, err and err.message)
