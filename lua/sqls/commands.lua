@@ -16,27 +16,18 @@ local function show_results_handler(mods)
     end
 end
 
-local function make_command_executor(command)
-    return function(mods, range_given, show_vertical)
-        vim.lsp.buf_request(
-            0,
-            'workspace/executeCommand',
-            {
-                command = command,
-                arguments = {vim.uri_from_bufnr(0), show_vertical},
-                range = range_given and vim.lsp.util.make_given_range_params().range or nil,
-            },
-            show_results_handler(mods)
-            )
-    end
+function M.exec(command, mods, range_given, show_vertical)
+    vim.lsp.buf_request(
+        0,
+        'workspace/executeCommand',
+        {
+            command = command,
+            arguments = {vim.uri_from_bufnr(0), show_vertical},
+            range = range_given and vim.lsp.util.make_given_range_params().range or nil,
+        },
+        show_results_handler(mods)
+        )
 end
-
-M.execute_query = make_command_executor('executeQuery')
-M.show_databases = make_command_executor('showDatabases')
-M.show_schemas = make_command_executor('showSchemas')
-M.show_connections = make_command_executor('showConnections')
-M.show_tables = make_command_executor('showTables')
-M.describe_table = make_command_executor('describeTable')
 
 local function choice_handler(switch_function, answer_formatter)
     return function(err, _, result, _, _, _, _)
