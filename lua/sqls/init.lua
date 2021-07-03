@@ -8,8 +8,8 @@ M.setup = function(opts)
         return (pickers[opts.picker] or pickers.default)(...)
     end
 
-    vim.cmd [[command! -buffer -range SqlsExecuteQuery lua require'sqls.commands'.exec('executeQuery', '<mods>', <range> ~= 0, nil)]]
-    vim.cmd [[command! -buffer -range SqlsExecuteQueryVertical lua require'sqls.commands'.exec('executeQuery', '<mods>', <range> ~= 0, '-show-vertical')]]
+    vim.cmd [[command! -buffer -range SqlsExecuteQuery lua require'sqls.commands'.exec('executeQuery', '<mods>', <range> ~= 0, nil, <line1>, <line2>)]]
+    vim.cmd [[command! -buffer -range SqlsExecuteQueryVertical lua require'sqls.commands'.exec('executeQuery', '<mods>', <range> ~= 0, '-show-vertical', <line1>, <line2>)]]
     vim.cmd [[command! -buffer SqlsShowDatabases lua require'sqls.commands'.exec('showDatabases', '<mods>')]]
     vim.cmd [[command! -buffer SqlsShowSchemas lua require'sqls.commands'.exec('showSchemas', '<mods>')]]
     vim.cmd [[command! -buffer SqlsShowConnections lua require'sqls.commands'.exec('showConnections', '<mods>')]]

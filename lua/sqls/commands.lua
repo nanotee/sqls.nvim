@@ -16,14 +16,20 @@ local function show_results_handler(mods)
     end
 end
 
-function M.exec(command, mods, range_given, show_vertical)
+function M.exec(command, mods, range_given, show_vertical, line1, line2)
+    local range
+    if range_given then
+        range = vim.lsp.util.make_given_range_params({line1, 0}, {line2, math.huge}).range
+        range['end'].character = range['end'].character - 1
+    end
+
     vim.lsp.buf_request(
         0,
         'workspace/executeCommand',
         {
             command = command,
             arguments = {vim.uri_from_bufnr(0), show_vertical},
-            range = range_given and vim.lsp.util.make_given_range_params().range or nil,
+            range = range,
         },
         show_results_handler(mods)
         )
