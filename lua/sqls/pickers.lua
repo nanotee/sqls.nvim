@@ -7,7 +7,10 @@ function M.default(switch_callback, choices)
 end
 
 function M.fzf(switch_callback, choices)
-    assert(vim.g.loaded_fzf == 1, 'The fzf.vim plugin must be installed')
+    if vim.g.loaded_fzf ~= 1 then
+        vim.notify('sqls: The fzf.vim plugin is not installed', vim.lsp.log_levels.WARN)
+        return
+    end
 
     local fzf_wrapped_options = vim.fn['fzf#wrap']('sqls', {
             source = choices,
@@ -22,7 +25,10 @@ end
 
 function M.telescope(switch_callback, choices)
     local telescope_loaded, _ = pcall(require, 'telescope')
-    assert(telescope_loaded, 'The telescope.nvim plugin must be installed')
+    if not telescope_loaded then
+        vim.notify('sqls: The telescope.nvim plugin is not installed', vim.lsp.log_levels.WARN)
+        return
+    end
     local pickers = require('telescope.pickers')
     local finders = require('telescope.finders')
     local actions = require('telescope.actions')

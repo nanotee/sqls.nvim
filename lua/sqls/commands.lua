@@ -7,7 +7,10 @@ local M = {}
 
 local function show_results_handler(mods)
     return function(err, _, result, _, _, _, _)
-        assert(not err, err and err.message)
+        if err then
+            vim.notify('sqls: ' .. err.message, vim.lsp.log_levels.ERROR)
+            return
+        end
         local tempfile = fn.tempname() .. '.sqls_output'
         local bufnr = fn.bufnr(tempfile, true)
         api.nvim_buf_set_lines(bufnr, 0, 1, false, vim.split(result, '\n'))
@@ -68,7 +71,10 @@ M.query_vertical = make_query_mapping('-show-vertical')
 
 local function choice_handler(switch_function, answer_formatter)
     return function(err, _, result, _, _, _, _)
-        assert(not err, err and err.message)
+        if err then
+            vim.notify('sqls: ' .. err.message, vim.lsp.log_levels.ERROR)
+            return
+        end
         local choices = vim.split(result, '\n')
         local function switch_callback(answer)
             return switch_function(answer_formatter(answer))
@@ -87,7 +93,9 @@ local function make_switch_function(command)
                 arguments = {query},
             },
             function(err, _, _, _, _, _)
-                assert(not err, err and err.message)
+                if err then
+                    vim.notify('sqls: ' .. err.message, vim.lsp.log_levels.ERROR)
+                end
             end
             )
     end
