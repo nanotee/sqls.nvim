@@ -5,8 +5,21 @@ local user_options = require('sqls')._user_options
 
 local M = {}
 
+local function wrap_05_handler(handler)
+    return function(...)
+        local fourth_argument = select(4, ...)
+        if type(fourth_argument) == 'number' then
+            return handler(...)
+        end
+
+        return (function(err, result, ctx, config)
+            return handler(err, ctx.method, result, ctx.client_id, ctx.bufnr, config)
+        end)(...)
+    end
+end
+
 local function show_results_handler(mods)
-    return function(err, _, result, _, _, _, _)
+    return wrap_05_handler(function(err, _, result, _, _, _, _)
         if err then
             vim.notify('sqls: ' .. err.message, vim.lsp.log_levels.ERROR)
             return
@@ -16,7 +29,7 @@ local function show_results_handler(mods)
         api.nvim_buf_set_lines(bufnr, 0, 1, false, vim.split(result, '\n'))
         vim.cmd(('%s pedit %s'):format(mods or '', tempfile))
         api.nvim_buf_set_option(bufnr, 'filetype', 'sqls_output')
-    end
+    end)
 end
 
 function M.exec(command, mods, range_given, show_vertical, line1, line2)
@@ -70,7 +83,7 @@ M.query = make_query_mapping()
 M.query_vertical = make_query_mapping('-show-vertical')
 
 local function choice_handler(switch_function, answer_formatter)
-    return function(err, _, result, _, _, _, _)
+    return wrap_05_handler(function(err, _, result, _, _, _, _)
         if err then
             vim.notify('sqls: ' .. err.message, vim.lsp.log_levels.ERROR)
             return
@@ -80,8 +93,14 @@ local function choice_handler(switch_function, answer_formatter)
             return switch_function(answer_formatter(answer))
         end
         user_options.picker(switch_callback, choices)
-    end
+    end)
 end
+
+local switch_handler = wrap_05_handler(function(err, _, _, _, _, _)
+    if err then
+        vim.notify('sqls: ' .. err.message, vim.lsp.log_levels.ERROR)
+    end
+end)
 
 local function make_switch_function(command)
     return function(query)
@@ -92,11 +111,7 @@ local function make_switch_function(command)
                 command = command,
                 arguments = {query},
             },
-            function(err, _, _, _, _, _)
-                if err then
-                    vim.notify('sqls: ' .. err.message, vim.lsp.log_levels.ERROR)
-                end
-            end
+            switch_handler
             )
     end
 end
