@@ -23,6 +23,33 @@ M.setup = function(opts)
     vim.api.nvim_buf_set_keymap(0, 'x', '<Plug>(sqls-execute-query)', "<Cmd>set opfunc=v:lua.require'sqls.commands'.query<CR>g@", {silent = true})
     vim.api.nvim_buf_set_keymap(0, 'n', '<Plug>(sqls-execute-query-vertical)', "<Cmd>set opfunc=v:lua.require'sqls.commands'.query_vertical<CR>g@", {silent = true})
     vim.api.nvim_buf_set_keymap(0, 'x', '<Plug>(sqls-execute-query-vertical)', "<Cmd>set opfunc=v:lua.require'sqls.commands'.query_vertical<CR>g@", {silent = true})
+
+    if vim.lsp.commands then
+        vim.lsp.commands['executeQuery'] = function(code_action, command)
+            require('sqls.commands').exec('executeQuery')
+        end
+        vim.lsp.commands['showDatabases'] = function(code_action, command)
+            require('sqls.commands').exec('showDatabases')
+        end
+        vim.lsp.commands['showSchemas'] = function(code_action, command)
+            require('sqls.commands').exec('showSchemas')
+        end
+        vim.lsp.commands['showConnections'] = function(code_action, command)
+            require('sqls.commands').exec('showConnections')
+        end
+        -- vim.lsp.commands['showTables'] = function(code_action, command)
+        --     require('sqls.commands').exec('showTables')
+        -- end
+        -- vim.lsp.commands['describeTable'] = function(code_action, command)
+        --     require('sqls.commands').exec('describeTable')
+        -- end
+        vim.lsp.commands['switchConnections'] = function(code_action, command)
+            require('sqls.commands').switch_connection()
+        end
+        vim.lsp.commands['switchDatabase'] = function(code_action, command)
+            require('sqls.commands').switch_database()
+        end
+    end
 end
 
 return M
