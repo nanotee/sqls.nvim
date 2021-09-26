@@ -2,6 +2,8 @@ local M = {}
 
 M._user_options = {}
 
+local did_define_codeactions = false
+
 M.setup = function(opts)
     function M._user_options.picker(...)
         local pickers = require('sqls.pickers')
@@ -24,7 +26,7 @@ M.setup = function(opts)
     vim.api.nvim_buf_set_keymap(0, 'n', '<Plug>(sqls-execute-query-vertical)', "<Cmd>set opfunc=v:lua.require'sqls.commands'.query_vertical<CR>g@", {silent = true})
     vim.api.nvim_buf_set_keymap(0, 'x', '<Plug>(sqls-execute-query-vertical)', "<Cmd>set opfunc=v:lua.require'sqls.commands'.query_vertical<CR>g@", {silent = true})
 
-    if vim.lsp.commands then
+    if vim.lsp.commands and not did_define_codeactions then
         vim.lsp.commands['executeQuery'] = function(code_action, command)
             require('sqls.commands').exec('executeQuery')
         end
@@ -49,6 +51,8 @@ M.setup = function(opts)
         vim.lsp.commands['switchDatabase'] = function(code_action, command)
             require('sqls.commands').switch_database()
         end
+
+        did_define_codeactions = true
     end
 end
 
