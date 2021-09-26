@@ -18,7 +18,7 @@ local function wrap_05_handler(handler)
     end
 end
 
-local function show_results_handler(mods)
+local function make_show_results_handler(mods)
     return wrap_05_handler(function(err, _, result, _, _, _, _)
         if err then
             vim.notify('sqls: ' .. err.message, vim.lsp.log_levels.ERROR)
@@ -47,7 +47,7 @@ function M.exec(command, mods, range_given, show_vertical, line1, line2)
             arguments = {vim.uri_from_bufnr(0), show_vertical},
             range = range,
         },
-        show_results_handler(mods)
+        make_show_results_handler(mods)
         )
 end
 
@@ -74,7 +74,7 @@ local function make_query_mapping(show_vertical)
                 arguments = {vim.uri_from_bufnr(0), show_vertical},
                 range = range,
             },
-            show_results_handler('')
+            make_show_results_handler('')
             )
     end
 end
@@ -82,7 +82,7 @@ end
 M.query = make_query_mapping()
 M.query_vertical = make_query_mapping('-show-vertical')
 
-local function choice_handler(switch_function, answer_formatter)
+local function make_choice_handler(switch_function, answer_formatter)
     return wrap_05_handler(function(err, _, result, _, _, _, _)
         if err then
             vim.notify('sqls: ' .. err.message, vim.lsp.log_levels.ERROR)
@@ -124,7 +124,7 @@ local function make_prompt_function(command, answer_formatter)
             {
                 command = command,
             },
-            choice_handler(switch_function, answer_formatter)
+            make_choice_handler(switch_function, answer_formatter)
             )
     end
 end
