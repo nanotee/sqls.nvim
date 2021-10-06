@@ -57,7 +57,7 @@ local function make_query_mapping(show_vertical)
         local _, lnum1, col1, _ = unpack(fn.getpos("'["))
         local _, lnum2, col2, _ = unpack(fn.getpos("']"))
         if type == 'block' then
-            vim.api.nvim_err_writeln("sqls doesn't support block-wise ranges!")
+            vim.notify('sqls does not support block-wise ranges!', vim.log.levels.ERROR)
             return
         elseif type == 'line' then
             range = vim.lsp.util.make_given_range_params({lnum1, 0}, {lnum2, math.huge}).range
