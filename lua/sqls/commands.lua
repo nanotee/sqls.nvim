@@ -21,7 +21,7 @@ end
 local function make_show_results_handler(mods)
     return wrap_05_handler(function(err, _, result, _, _, _, _)
         if err then
-            vim.notify('sqls: ' .. err.message, vim.lsp.log_levels.ERROR)
+            vim.notify('sqls: ' .. err.message, vim.log.levels.ERROR)
             return
         end
         local tempfile = fn.tempname() .. '.sqls_output'
@@ -85,7 +85,7 @@ M.query_vertical = make_query_mapping('-show-vertical')
 local function make_choice_handler(switch_function, answer_formatter)
     return wrap_05_handler(function(err, _, result, _, _, _, _)
         if err then
-            vim.notify('sqls: ' .. err.message, vim.lsp.log_levels.ERROR)
+            vim.notify('sqls: ' .. err.message, vim.log.levels.ERROR)
             return
         end
         local choices = vim.split(result, '\n')
@@ -98,7 +98,7 @@ end
 
 local switch_handler = wrap_05_handler(function(err, _, _, _, _, _)
     if err then
-        vim.notify('sqls: ' .. err.message, vim.lsp.log_levels.ERROR)
+        vim.notify('sqls: ' .. err.message, vim.log.levels.ERROR)
     end
 end)
 
