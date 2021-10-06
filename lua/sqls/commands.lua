@@ -88,6 +88,10 @@ local function make_choice_handler(switch_function, answer_formatter)
             vim.notify('sqls: ' .. err.message, vim.log.levels.ERROR)
             return
         end
+        if result == '' then
+            vim.notify('sqls: No choices available')
+            return
+        end
         local choices = vim.split(result, '\n')
         local function switch_callback(answer)
             return switch_function(answer_formatter(answer))
