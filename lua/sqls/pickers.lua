@@ -1,9 +1,15 @@
 local M = {}
 
-function M.default(switch_callback, choices)
-    local answer = vim.fn.inputlist(choices)
-    if not choices[answer] then return end
-    switch_callback(choices[answer])
+if vim.ui and vim.ui.select then
+    function M.default(switch_callback, choices)
+        vim.ui.select(choices, {prompt = 'sqls.nvim'}, switch_callback)
+    end
+else
+    function M.default(switch_callback, choices)
+        local answer = vim.fn.inputlist(choices)
+        if not choices[answer] then return end
+        switch_callback(choices[answer])
+    end
 end
 
 function M.fzf(switch_callback, choices)
