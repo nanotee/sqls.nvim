@@ -22,11 +22,12 @@ Plug 'nanotee/sqls.nvim'
 Setup the plugin with [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig)
 
 ```lua
-require'lspconfig'.sqls.setup{
+require('lspconfig').sqls.setup{
     on_attach = function(client)
         client.resolved_capabilities.execute_command = true
+        client.commands = require('sqls').commands -- Neovim 0.6+ only
 
-        require'sqls'.setup{}
+        require('sqls').setup{}
     end
 }
 ```
@@ -53,7 +54,7 @@ Available mappings:
 The plugin can be configured by passing a table to the `setup()` function. Available options:
 
 ```lua
-require'sqls'.setup{
+require('sqls').setup{
     picker = 'default', -- Picker for choosing a database or a connection.
                         -- Available pickers:
                         -- - `default`: basic picker based on `inputlist()`
