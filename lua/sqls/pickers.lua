@@ -38,6 +38,7 @@ function M.telescope(switch_callback, choices)
     local pickers = require('telescope.pickers')
     local finders = require('telescope.finders')
     local actions = require('telescope.actions')
+    local action_state = require('telescope.actions.state')
     local conf = require('telescope.config').values
     pickers.new({}, {
             prompt_title = 'sqls.nvim',
@@ -47,7 +48,7 @@ function M.telescope(switch_callback, choices)
             sorter = conf.generic_sorter({}),
             attach_mappings = function(prompt_bufnr)
                 actions.select_default:replace(function()
-                    local selection = actions.get_selected_entry()
+                    local selection = action_state.get_selected_entry()
                     actions.close(prompt_bufnr)
                     switch_callback(selection.value)
                 end)
