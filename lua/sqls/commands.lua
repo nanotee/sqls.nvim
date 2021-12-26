@@ -94,7 +94,8 @@ local function make_choice_handler(switch_function, answer_formatter)
         end
         local choices = vim.split(result, '\n')
         local function switch_callback(answer)
-            return switch_function(answer_formatter(answer))
+            if not answer then return end
+            switch_function(answer_formatter(answer))
         end
         user_options.picker(switch_callback, choices)
     end)
