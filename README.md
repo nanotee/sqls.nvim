@@ -23,11 +23,8 @@ Setup the plugin with [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig)
 
 ```lua
 require('lspconfig').sqls.setup{
-    on_attach = function(client)
-        client.resolved_capabilities.execute_command = true
-        client.commands = require('sqls').commands -- Neovim 0.6+ only
-
-        require('sqls').setup{}
+    on_attach = function(client, bufnr)
+        require('sqls').on_attach(client, bufnr)
     end
 }
 ```
@@ -48,17 +45,3 @@ Available mappings:
 
 - `<Plug>(sqls-execute-query)`: In visual mode, executes the selected range. In normal mode, executes a motion (like `ip` or `aw`)
 - `<Plug>(sqls-execute-query-vertical)`: same as `<Plug>(sqls-execute-query)`, but the results are displayed vertically
-
-## Configuration
-
-The plugin can be configured by passing a table to the `setup()` function. Available options:
-
-```lua
-require('sqls').setup{
-    picker = 'default', -- Picker for choosing a database or a connection.
-                        -- Available pickers:
-                        -- - `default`: basic picker based on `inputlist()`
-                        -- - `fzf`: requires the `fzf.vim` script
-                        -- - `telescope`: requires the `telescope.nvim` plugin
-}
-```
