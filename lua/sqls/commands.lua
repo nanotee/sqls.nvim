@@ -11,6 +11,9 @@ local function make_show_results_handler(mods)
             vim.notify('sqls: ' .. err.message, vim.log.levels.ERROR)
             return
         end
+        if not result then
+            return
+        end
         local tempfile = fn.tempname() .. '.sqls_output'
         local bufnr = fn.bufnr(tempfile, true)
         api.nvim_buf_set_lines(bufnr, 0, 1, false, vim.split(result, '\n'))
@@ -73,6 +76,9 @@ local function make_choice_handler(switch_function, answer_formatter)
     return function(err, result, _, _)
         if err then
             vim.notify('sqls: ' .. err.message, vim.log.levels.ERROR)
+            return
+        end
+        if not result then
             return
         end
         if result == '' then
