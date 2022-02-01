@@ -45,3 +45,14 @@ Available mappings:
 
 - `<Plug>(sqls-execute-query)`: In visual mode, executes the selected range. In normal mode, executes a motion (like `ip` or `aw`)
 - `<Plug>(sqls-execute-query-vertical)`: same as `<Plug>(sqls-execute-query)`, but the results are displayed vertically
+
+Status bar support:
+
+After choosing a connection you can ask for the currently selected connection
+and database like this:
+
+```lua
+local status = require("sqls.commands").status
+-- status.connection: name of the connection name in the configuration file
+-- status.database: name of the connected database
+```

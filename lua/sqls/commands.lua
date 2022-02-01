@@ -127,8 +127,20 @@ local function make_prompt_function(command, answer_formatter)
     end
 end
 
-local function format_database_answer(answer) return answer end
-local function format_connection_answer(answer) return vim.split(answer, ' ')[1] end
+-- @field connection string
+-- @field database string
+M.status = {}
+
+local function format_database_answer(answer)
+  M.status.database = answer
+  return answer
+end
+local function format_connection_answer(answer)
+  M.status.connection = vim.split(answer, ' ')[3]
+  local _, _, name = answer:find("dbname=([^ ]+)")
+  M.status.database = name or "Unknown"
+  return vim.split(answer, ' ')[1]
+end
 
 local database_switch_function = make_switch_function('switchDatabase')
 local connection_switch_function = make_switch_function('switchConnections')
