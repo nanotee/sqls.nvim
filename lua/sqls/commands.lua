@@ -29,7 +29,7 @@ end
 ---@param command string
 ---@param mods? string
 ---@param range_given? boolean
----@param show_vertical? '-show-vertical'
+---@param show_vertical? '"-show-vertical"'
 ---@param line1? integer
 ---@param line2? integer
 function M.exec(command, mods, range_given, show_vertical, line1, line2)
@@ -51,9 +51,9 @@ function M.exec(command, mods, range_given, show_vertical, line1, line2)
         )
 end
 
----@alias operatorfunc fun(type: 'block'|'line'|'char')
+---@alias operatorfunc fun(type: '"block"'|'"line"'|'"char"')
 
----@param show_vertical? '-show-vertical'
+---@param show_vertical? '"-show-vertical"'
 ---@return operatorfunc
 local function make_query_mapping(show_vertical)
     return function(type)
