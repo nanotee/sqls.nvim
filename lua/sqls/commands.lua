@@ -93,8 +93,9 @@ M.query_vertical = make_query_mapping('-show-vertical')
 
 ---@param switch_function sqls_switch_function
 ---@param answer_formatter sqls_answer_formatter
+---@param event_name sqls_event_name
 ---@return sqls_lsp_handler
-local function make_choice_handler(switch_function, answer_formatter)
+local function make_choice_handler(switch_function, answer_formatter, event_name)
     return function(err, result, _, _)
         if err then
             vim.notify('sqls: ' .. err.message, vim.log.levels.ERROR)
@@ -110,6 +111,7 @@ local function make_choice_handler(switch_function, answer_formatter)
         local choices = vim.split(result, '\n')
         local function switch_callback(answer)
             if not answer then return end
+            require('sqls.events')._dispatch_event(event_name, {choice = answer})
             switch_function(answer_formatter(answer))
         end
         user_options.picker(switch_callback, choices)
@@ -141,8 +143,9 @@ end
 
 ---@param command string
 ---@param answer_formatter sqls_answer_formatter
+---@param event_name sqls_event_name
 ---@return sqls_prompt_function
-local function make_prompt_function(command, answer_formatter)
+local function make_prompt_function(command, answer_formatter, event_name)
     return function(switch_function)
         vim.lsp.buf_request(
             0,
@@ -150,7 +153,7 @@ local function make_prompt_function(command, answer_formatter)
             {
                 command = command,
             },
-            make_choice_handler(switch_function, answer_formatter)
+            make_choice_handler(switch_function, answer_formatter, event_name)
             )
     end
 end
@@ -162,8 +165,8 @@ local function format_connection_answer(answer) return vim.split(answer, ' ')[1]
 
 local database_switch_function = make_switch_function('switchDatabase')
 local connection_switch_function = make_switch_function('switchConnections')
-local database_prompt_function = make_prompt_function('showDatabases', format_database_answer)
-local connection_prompt_function = make_prompt_function('showConnections', format_connection_answer)
+local database_prompt_function = make_prompt_function('showDatabases', format_database_answer, 'database_choice')
+local connection_prompt_function = make_prompt_function('showConnections', format_connection_answer, 'connection_choice')
 
 ---@param prompt_function sqls_prompt_function
 ---@param switch_function sqls_switch_function
