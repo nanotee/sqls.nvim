@@ -2,6 +2,7 @@ local M = {}
 
 M._user_options = {}
 
+---@deprecated
 M.setup = function(opts, _bufnr)
     local bufnr = _bufnr or 0
     function M._user_options.picker(...)
@@ -31,32 +32,33 @@ end
 M.on_attach = function(client, bufnr)
     client.resolved_capabilities.execute_command = true
     client.commands = M.commands
+    ---@diagnostic disable-next-line: deprecated
     M.setup({}, bufnr)
 end
 
 M.commands = {
-    executeQuery = function(code_action, command)
+    executeQuery = function(_, _)
         require('sqls.commands').exec('executeQuery')
     end,
-    showDatabases = function(code_action, command)
+    showDatabases = function(_, _)
         require('sqls.commands').exec('showDatabases')
     end,
-    showSchemas = function(code_action, command)
+    showSchemas = function(_, _)
         require('sqls.commands').exec('showSchemas')
     end,
-    showConnections = function(code_action, command)
+    showConnections = function(_, _)
         require('sqls.commands').exec('showConnections')
     end,
-    showTables = function(code_action, command)
+    showTables = function(_, _)
         require('sqls.commands').exec('showTables')
     end,
-    describeTable = function(code_action, command)
+    describeTable = function(_, _)
         require('sqls.commands').exec('describeTable')
     end,
-    switchConnections = function(code_action, command)
+    switchConnections = function(_, _)
         require('sqls.commands').switch_connection()
     end,
-    switchDatabase = function(code_action, command)
+    switchDatabase = function(_, _)
         require('sqls.commands').switch_database()
     end,
 }
