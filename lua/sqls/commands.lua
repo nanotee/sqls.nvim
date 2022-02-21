@@ -5,10 +5,10 @@ local user_options = require('sqls')._user_options
 
 local M = {}
 
----@alias lsp_handler fun(err?: table, result?: any, ctx: table, config: table)
+---@alias sqls_lsp_handler fun(err?: table, result?: any, ctx: table, config: table)
 
 ---@param mods string
----@return lsp_handler
+---@return sqls_lsp_handler
 local function make_show_results_handler(mods)
     return function(err, result, _, _)
         if err then
@@ -51,10 +51,10 @@ function M.exec(command, mods, range_given, show_vertical, line1, line2)
         )
 end
 
----@alias operatorfunc fun(type: '"block"'|'"line"'|'"char"')
+---@alias sqls_operatorfunc fun(type: '"block"'|'"line"'|'"char"')
 
 ---@param show_vertical? '"-show-vertical"'
----@return operatorfunc
+---@return sqls_operatorfunc
 local function make_query_mapping(show_vertical)
     return function(type)
         local range
@@ -86,14 +86,14 @@ end
 M.query = make_query_mapping()
 M.query_vertical = make_query_mapping('-show-vertical')
 
----@alias switch_function fun(query: string)
----@alias prompt_function fun(switch_function: switch_function)
----@alias answer_formatter fun(answer: string): string
----@alias switcher fun(query: string)
+---@alias sqls_switch_function fun(query: string)
+---@alias sqls_prompt_function fun(switch_function: sqls_switch_function)
+---@alias sqls_answer_formatter fun(answer: string): string
+---@alias sqls_switcher fun(query: string)
 
----@param switch_function switch_function
----@param answer_formatter answer_formatter
----@return lsp_handler
+---@param switch_function sqls_switch_function
+---@param answer_formatter sqls_answer_formatter
+---@return sqls_lsp_handler
 local function make_choice_handler(switch_function, answer_formatter)
     return function(err, result, _, _)
         if err then
@@ -116,7 +116,7 @@ local function make_choice_handler(switch_function, answer_formatter)
     end
 end
 
----@type lsp_handler
+---@type sqls_lsp_handler
 local function switch_handler(err, _, _, _)
     if err then
         vim.notify('sqls: ' .. err.message, vim.log.levels.ERROR)
@@ -124,7 +124,7 @@ local function switch_handler(err, _, _, _)
 end
 
 ---@param command string
----@return switch_function
+---@return sqls_switch_function
 local function make_switch_function(command)
     return function(query)
         vim.lsp.buf_request(
@@ -140,8 +140,8 @@ local function make_switch_function(command)
 end
 
 ---@param command string
----@param answer_formatter answer_formatter
----@return prompt_function
+---@param answer_formatter sqls_answer_formatter
+---@return sqls_prompt_function
 local function make_prompt_function(command, answer_formatter)
     return function(switch_function)
         vim.lsp.buf_request(
@@ -155,9 +155,9 @@ local function make_prompt_function(command, answer_formatter)
     end
 end
 
----@type answer_formatter
+---@type sqls_answer_formatter
 local function format_database_answer(answer) return answer end
----@type answer_formatter
+---@type sqls_answer_formatter
 local function format_connection_answer(answer) return vim.split(answer, ' ')[1] end
 
 local database_switch_function = make_switch_function('switchDatabase')
@@ -165,9 +165,9 @@ local connection_switch_function = make_switch_function('switchConnections')
 local database_prompt_function = make_prompt_function('showDatabases', format_database_answer)
 local connection_prompt_function = make_prompt_function('showConnections', format_connection_answer)
 
----@param prompt_function prompt_function
----@param switch_function switch_function
----@return switcher
+---@param prompt_function sqls_prompt_function
+---@param switch_function sqls_switch_function
+---@return sqls_switcher
 local function make_switcher(prompt_function, switch_function)
     return function(query)
         if not query then
