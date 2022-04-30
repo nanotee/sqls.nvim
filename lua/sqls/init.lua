@@ -30,7 +30,12 @@ M.setup = function(opts, _bufnr)
 end
 
 M.on_attach = function(client, bufnr)
-    client.resolved_capabilities.execute_command = true
+    if vim.fn.has('nvim-0.8.0') == 1 then
+        client.server_capabilities.executeCommandProvider = true
+        client.server_capabilities.codeActionProvider = {resolveProvider = false}
+    else
+        client.resolved_capabilities.execute_command = true
+    end
     client.commands = M.commands
     ---@diagnostic disable-next-line: deprecated
     M.setup({}, bufnr)
