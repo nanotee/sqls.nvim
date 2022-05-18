@@ -31,9 +31,9 @@ require('lspconfig').sqls.setup{
 
 ## Commands
 
-See [sqls-nvim-commands](doc/sqls-nvim.txt#L4)
+See [sqls-nvim-commands](doc/sqls-nvim.txt#L14)
 
 ## Mappings
 
-See [sqls-nvim-maps](doc/sqls-nvim.txt#L44)
+See [sqls-nvim-maps](doc/sqls-nvim.txt#L54)
 

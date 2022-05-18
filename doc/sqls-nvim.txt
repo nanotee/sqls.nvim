@@ -1,5 +1,15 @@
 *sqls-nvim.txt*		                Neovim plugin for the sqls language server
 
+SETUP                                           *sqls-nvim-setup*
+
+Setup the plugin with nvim-lspconfig https://github.com/neovim/nvim-lspconfig
+>
+    require('lspconfig').sqls.setup{
+        on_attach = function(client, bufnr)
+            require('sqls').on_attach(client, bufnr)
+        end
+    }
+<
 ==============================================================================
 COMMANDS                                        *sqls-nvim-commands*
 
