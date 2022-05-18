@@ -29,19 +29,11 @@ require('lspconfig').sqls.setup{
 }
 ```
 
-Available commands:
+## Commands
 
-- `:SqlsExecuteQuery`: In normal mode, executes the query in the current buffer. In visual mode, executes the selected query (only works line-wise). Shows the results in a preview buffer.
-- `:SqlsExecuteQueryVertical`: Same as `:SqlsExecuteQuery`, but the results are displayed vertically.
-- `:SqlsShowDatabases`: Shows a list of available databases in a preview buffer.
-- `:SqlsShowSchemas`: Shows a list of available schemas in a preview buffer.
-- `:SqlsShowConnections`: Shows a list of available database connections in a preview buffer.
-- `:SqlsSwitchDatabase {database_name}`: Switches to a different database. If {database_name} is omitted, displays an interactive prompt to select a database.
-- `:SqlsSwitchConnection {connection_index}`: Switches to a different database connection. If {connection_index} is omitted, displays an interactive prompt to select a connection.
+See [sqls-nvim-commands](doc/sqls-nvim.txt#L4)
 
-Commands using a preview buffer also support modifiers like `:vertical` or `:tab`.
+## Mappings
 
-Available mappings:
+See [sqls-nvim-maps](doc/sqls-nvim.txt#L44)
 
-- `<Plug>(sqls-execute-query)`: In visual mode, executes the selected range. In normal mode, executes a motion (like `ip` or `aw`)
-- `<Plug>(sqls-execute-query-vertical)`: same as `<Plug>(sqls-execute-query)`, but the results are displayed vertically

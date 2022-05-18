@@ -1,0 +1,55 @@
+*sqls-nvim.txt*		                Neovim plugin for the sqls language server
+
+==============================================================================
+COMMANDS                                        *sqls-nvim-commands*
+
+                                                *:SqlsExecuteQuery*
+:SqlsExecuteQuery          In normal mode, executes the query in the current
+                           buffer. In visual mode, executes the selected query
+                           (only works line-wise). Shows the results in a
+                           preview buffer.
+
+
+                                                *:SqlsExecuteQueryVertical*
+:SqlsExecuteQueryVertical  Same as `:SqlsExecuteQuery`, but the results are
+                           displayed vertically.
+
+
+                                                *:SqlsShowDatabases*
+:SqlsShowDatabases         Shows a list of available databases in a preview
+                           buffer.
+
+                                                *:SqlsShowSchemas*
+:SqlsShowSchemas           Shows a list of available schemas in a preview
+                           buffer.
+
+                                                *:SqlsShowConnections*
+:SqlsShowConnections       Shows a list of available database connections in a
+                           preview buffer.
+
+                                                *:SqlsSwitchDatabase*
+:SqlsSwitchDatabase {database_name}
+                           Switches to a different database. If
+                           {database_name} is omitted, displays an interactive
+                           prompt with |vim.ui.select()| to select a database.
+
+                                                *:SqlsSwitchConnection*
+:SqlsSwitchConnection {connection_index}
+                           Switches to a different database connection. If
+                           {connection_index} is omitted, displays an
+                           interactive prompt with |vim.ui.select()| to select
+                           a connection.
+
+==============================================================================
+MAPS                                            *sqls-nvim-maps*
+
+                                                *<Plug>(sqls-execute-query)*
+<Plug>(sqls-execute-query)           In visual mode, executes the selected
+                                     range. In normal mode, executes a motion
+                                     (like |ip| or |aw|)
+
+                                                *<Plug>(sqls-execute-query-vertical)*
+<Plug>(sqls-execute-query-vertical)  same as |<Plug>(sqls-execute-query)|, but
+                                     the results are displayed vertically
+
+vim:tw=78:et:ft=help:norl:
