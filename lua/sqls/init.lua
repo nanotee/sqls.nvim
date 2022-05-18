@@ -1,5 +1,7 @@
 local M = {}
 
+local api = vim.api
+
 M._user_options = {}
 
 ---@deprecated
@@ -10,23 +12,39 @@ M.setup = function(opts, _bufnr)
         return (pickers[opts.picker] or pickers.default)(...)
     end
 
-    vim.api.nvim_buf_call(bufnr, function()
-        vim.cmd [[command! -buffer -range SqlsExecuteQuery lua require'sqls.commands'.exec('executeQuery', '<mods>', <range> ~= 0, nil, <line1>, <line2>)]]
-        vim.cmd [[command! -buffer -range SqlsExecuteQueryVertical lua require'sqls.commands'.exec('executeQuery', '<mods>', <range> ~= 0, '-show-vertical', <line1>, <line2>)]]
-        vim.cmd [[command! -buffer SqlsShowDatabases lua require'sqls.commands'.exec('showDatabases', '<mods>')]]
-        vim.cmd [[command! -buffer SqlsShowSchemas lua require'sqls.commands'.exec('showSchemas', '<mods>')]]
-        vim.cmd [[command! -buffer SqlsShowConnections lua require'sqls.commands'.exec('showConnections', '<mods>')]]
-        -- Not yet supported by the language server:
-        -- vim.cmd [[command! -buffer SqlsShowTables lua require'sqls.commands'.exec('showTables', '<mods>')]]
-        -- vim.cmd [[command! -buffer SqlsDescribeTable lua require'sqls.commands'.exec('describeTable', '<mods>')]]
-        vim.cmd [[command! -buffer -nargs=? SqlsSwitchDatabase lua require'sqls.commands'.switch_database(<f-args>)]]
-        vim.cmd [[command! -buffer -nargs=? SqlsSwitchConnection lua require'sqls.commands'.switch_connection(<f-args>)]]
-    end)
+    api.nvim_buf_create_user_command(bufnr, 'SqlsExecuteQuery', function(args)
+        require('sqls.commands').exec('executeQuery', args.mods, args.range ~= 0, nil, args.line1, args.line2)
+    end, { range = true })
+    api.nvim_buf_create_user_command(bufnr, 'SqlsExecuteQueryVertical', function(args)
+        require('sqls.commands').exec('executeQuery', args.mods, args.range ~= 0, '-show-vertical', args.line1, args.line2)
+    end, { range = true })
+    api.nvim_buf_create_user_command(bufnr, 'SqlsShowDatabases', function(args)
+        require('sqls.commands').exec('showDatabases', args.mods)
+    end, {})
+    api.nvim_buf_create_user_command(bufnr, 'SqlsShowSchemas', function(args)
+        require('sqls.commands').exec('showSchemas', args.mods)
+    end, {})
+    api.nvim_buf_create_user_command(bufnr, 'SqlsShowConnections', function(args)
+        require('sqls.commands').exec('showConnections', args.mods)
+    end, {})
+    -- Not yet supported by the language server:
+    -- api.nvim_buf_create_user_command(bufnr, 'SqlsShowTables', function(args)
+    --     require('sqls.commands').exec('showTables', args.mods)
+    -- end, {})
+    -- api.nvim_buf_create_user_command(bufnr, 'SqlsDescribeTable', function(args)
+    --     require('sqls.commands').exec('describeTable', args.mods)
+    -- end, {})
+    api.nvim_buf_create_user_command(bufnr, 'SqlsSwitchDatabase', function(args)
+        require('sqls.commands').switch_database(args.args ~= '' and args.args or nil)
+    end, { nargs = '?' })
+    api.nvim_buf_create_user_command(bufnr, 'SqlsSwitchConnection', function(args)
+        require('sqls.commands').switch_connection(args.args ~= '' and args.args or nil)
+    end, { nargs = '?' })
 
-    vim.api.nvim_buf_set_keymap(bufnr, 'n', '<Plug>(sqls-execute-query)', "<Cmd>set opfunc=v:lua.require'sqls.commands'.query<CR>g@", {silent = true})
-    vim.api.nvim_buf_set_keymap(bufnr, 'x', '<Plug>(sqls-execute-query)', "<Cmd>set opfunc=v:lua.require'sqls.commands'.query<CR>g@", {silent = true})
-    vim.api.nvim_buf_set_keymap(bufnr, 'n', '<Plug>(sqls-execute-query-vertical)', "<Cmd>set opfunc=v:lua.require'sqls.commands'.query_vertical<CR>g@", {silent = true})
-    vim.api.nvim_buf_set_keymap(bufnr, 'x', '<Plug>(sqls-execute-query-vertical)', "<Cmd>set opfunc=v:lua.require'sqls.commands'.query_vertical<CR>g@", {silent = true})
+    api.nvim_buf_set_keymap(bufnr, 'n', '<Plug>(sqls-execute-query)', "<Cmd>set opfunc=v:lua.require'sqls.commands'.query<CR>g@", {silent = true})
+    api.nvim_buf_set_keymap(bufnr, 'x', '<Plug>(sqls-execute-query)', "<Cmd>set opfunc=v:lua.require'sqls.commands'.query<CR>g@", {silent = true})
+    api.nvim_buf_set_keymap(bufnr, 'n', '<Plug>(sqls-execute-query-vertical)', "<Cmd>set opfunc=v:lua.require'sqls.commands'.query_vertical<CR>g@", {silent = true})
+    api.nvim_buf_set_keymap(bufnr, 'x', '<Plug>(sqls-execute-query-vertical)', "<Cmd>set opfunc=v:lua.require'sqls.commands'.query_vertical<CR>g@", {silent = true})
 end
 
 M.on_attach = function(client, bufnr)
