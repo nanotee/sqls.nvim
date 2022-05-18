@@ -5,8 +5,18 @@ local api = vim.api
 M._user_options = {}
 
 ---@deprecated
-M.setup = function(opts, _bufnr)
+M.setup = function(opts, _bufnr, _was_called_via_on_attach)
     local bufnr = _bufnr or 0
+    local was_called_via_on_attach = _was_called_via_on_attach or false
+
+    if not was_called_via_on_attach then
+        vim.notify_once('sqls.nvim: the "setup()" function is deprecated, use "on_attach()" instead (:h sqls-nvim-setup)', vim.log.levels.WARN)
+    end
+
+    if opts.picker ~= nil then
+        vim.notify_once('sqls.nvim: the "picker" option is deprecated, override "vim.ui.select()" instead', vim.log.levels.WARN)
+    end
+
     function M._user_options.picker(...)
         local pickers = require('sqls.pickers')
         return (pickers[opts.picker] or pickers.default)(...)
@@ -56,7 +66,7 @@ M.on_attach = function(client, bufnr)
     end
     client.commands = M.commands
     ---@diagnostic disable-next-line: deprecated
-    M.setup({}, bufnr)
+    M.setup({}, bufnr, true)
 end
 
 M.commands = {
