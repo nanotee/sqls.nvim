@@ -1,7 +1,6 @@
 local api = vim.api
 local fn = vim.fn
 
-local user_options = require('sqls')._user_options
 
 local M = {}
 
@@ -63,7 +62,9 @@ local function make_query_mapping(show_vertical)
         if type == 'block' then
             vim.notify('sqls does not support block-wise ranges!', vim.log.levels.ERROR)
             return
-        elseif type == 'line' then
+        end
+
+        if type == 'line' then
             range = vim.lsp.util.make_given_range_params({lnum1, 0}, {lnum2, math.huge}).range
             range['end'].character = range['end'].character - 1
         elseif type == 'char' then
@@ -120,7 +121,7 @@ local function make_choice_handler(switch_function, answer_formatter, event_name
             switch_callback(answer)
             return
         end
-        user_options.picker(switch_callback, choices)
+        vim.ui.select(choices, {prompt = 'sqls.nvim'}, switch_callback)
     end
 end
 
