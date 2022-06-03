@@ -1,6 +1,22 @@
 local api = vim.api
 local fn = vim.fn
 
+local nvim_exec_autocmds
+
+if fn.has('nvim-0.8') == 1 then
+    nvim_exec_autocmds = api.nvim_exec_autocmds
+else
+    nvim_exec_autocmds = function() end
+end
+
+local legacy_events_to_autocmd_map = {
+    database_choice = 'SqlsDatabaseChoice',
+    connection_choice = 'SqlsConnectionChoice',
+}
+
+local function to_autocmd_event_name(event_name)
+    return legacy_events_to_autocmd_map[event_name]
+end
 
 local M = {}
 
@@ -115,6 +131,11 @@ local function make_choice_handler(switch_function, answer_formatter, event_name
             if not answer then return end
             switch_function(answer_formatter(answer))
             require('sqls.events')._dispatch_event(event_name, {choice = answer})
+            ---@diagnostic disable-next-line: redundant-parameter
+            nvim_exec_autocmds('User', {
+                pattern = to_autocmd_event_name(event_name),
+                data = {choice = answer},
+            })
         end
         if query then
             local answer = choices[tonumber(query)]

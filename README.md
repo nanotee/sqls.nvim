@@ -37,3 +37,6 @@ See [sqls-nvim-commands](doc/sqls-nvim.txt#L14)
 
 See [sqls-nvim-maps](doc/sqls-nvim.txt#L54)
 
+## Autocommands
+
+See [sqls-nvim-autocmds](doc/sqls-nvim.txt#L66)
