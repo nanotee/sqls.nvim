@@ -63,7 +63,7 @@ MAPS                                            *sqls-nvim-maps*
                                      the results are displayed vertically
 
 ==============================================================================
-AUTOCOMMANDS                                    *sqls-nvim-autocmds*
+EVENTS                                          *sqls-nvim-events*
 
 sqls.nvim dispatches custom |User| events that can be subscribed to using
 |autocommand|s. It exposes custom data via the `data` key in Lua callbacks

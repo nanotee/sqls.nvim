@@ -14,9 +14,9 @@ local events = {
 
 ---@param event_name sqls_event_name
 ---@param subscriber sqls_subscriber
----@deprecated use autocommands instead (:h sqls-nvim-autocmds)
+---@deprecated use autocommands instead (:h sqls-nvim-events)
 function M.add_subscriber(event_name, subscriber)
-    -- vim.notify_once('sqls.nvim: the "add_subscriber()" function is deprecated, use autocommands instead (:h sqls-nvim-autocmds)', vim.log.levels.WARN)
+    -- vim.notify_once('sqls.nvim: the "add_subscriber()" function is deprecated, use autocommands instead (:h sqls-nvim-events)', vim.log.levels.WARN)
     vim.validate{
         event_name = {event_name, 'string'},
         subscriber = {subscriber, 'function'},
@@ -31,9 +31,9 @@ end
 
 ---@param event_name sqls_event_name
 ---@param subscriber sqls_subscriber
----@deprecated use autocommands instead (:h sqls-nvim-autocmds)
+---@deprecated use autocommands instead (:h sqls-nvim-events)
 function M.remove_subscriber(event_name, subscriber)
-    -- vim.notify_once('sqls.nvim: the "remove_subscriber()" function is deprecated, use autocommands instead (:h sqls-nvim-autocmds)', vim.log.levels.WARN)
+    -- vim.notify_once('sqls.nvim: the "remove_subscriber()" function is deprecated, use autocommands instead (:h sqls-nvim-events)', vim.log.levels.WARN)
     vim.validate{
         event_name = {event_name, 'string'},
         subscriber = {subscriber, 'function'},
