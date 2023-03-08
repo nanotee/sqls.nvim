@@ -65,8 +65,6 @@ MAPS                                            *sqls-nvim-maps*
 ==============================================================================
 AUTOCOMMANDS                                    *sqls-nvim-autocmds*
 
-(This feature is only available in Neovim 0.8.0+)
-
 sqls.nvim dispatches custom |User| events that can be subscribed to using
 |autocommand|s. It exposes custom data via the `data` key in Lua callbacks
 (see |nvim_create_autocmd()|):

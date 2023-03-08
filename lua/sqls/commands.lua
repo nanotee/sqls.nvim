@@ -1,13 +1,7 @@
 local api = vim.api
 local fn = vim.fn
 
-local nvim_exec_autocmds
-
-if fn.has('nvim-0.8') == 1 then
-    nvim_exec_autocmds = api.nvim_exec_autocmds
-else
-    nvim_exec_autocmds = function() end
-end
+local nvim_exec_autocmds = api.nvim_exec_autocmds
 
 local legacy_events_to_autocmd_map = {
     database_choice = 'SqlsDatabaseChoice',

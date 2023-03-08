@@ -3,12 +3,8 @@ local M = {}
 local api = vim.api
 
 M.on_attach = function(client, bufnr)
-    if vim.fn.has('nvim-0.8.0') == 1 then
-        client.server_capabilities.executeCommandProvider = true
-        client.server_capabilities.codeActionProvider = {resolveProvider = false}
-    else
-        client.resolved_capabilities.execute_command = true
-    end
+    client.server_capabilities.executeCommandProvider = true
+    client.server_capabilities.codeActionProvider = {resolveProvider = false}
 
     client.commands = M.commands
     api.nvim_buf_create_user_command(bufnr, 'SqlsExecuteQuery', function(args)
