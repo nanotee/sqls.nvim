@@ -35,21 +35,22 @@ local function make_show_results_handler(mods)
     end
 end
 
+---@param client_id integer
 ---@param command string
 ---@param mods? string
 ---@param range_given? boolean
 ---@param show_vertical? '"-show-vertical"'
 ---@param line1? integer
 ---@param line2? integer
-function M.exec(command, mods, range_given, show_vertical, line1, line2)
+function M.exec(client_id, command, mods, range_given, show_vertical, line1, line2)
     local range
     if range_given then
         range = vim.lsp.util.make_given_range_params({line1, 0}, {line2, math.huge}).range
         range['end'].character = range['end'].character - 1
     end
 
-    vim.lsp.buf_request(
-        0,
+    local client = vim.lsp.get_client_by_id(client_id)
+    client.request(
         'workspace/executeCommand',
         {
             command = command,
@@ -60,12 +61,12 @@ function M.exec(command, mods, range_given, show_vertical, line1, line2)
         )
 end
 
----@alias sqls_operatorfunc fun(type: '"block"'|'"line"'|'"char"')
+---@alias sqls_operatorfunc fun(type: '"block"'|'"line"'|'"char"', client_id: integer)
 
 ---@param show_vertical? '"-show-vertical"'
 ---@return sqls_operatorfunc
 local function make_query_mapping(show_vertical)
-    return function(type)
+    return function(type, client_id)
         local range
         local _, lnum1, col1, _ = unpack(fn.getpos("'["))
         local _, lnum2, col2, _ = unpack(fn.getpos("']"))
@@ -81,8 +82,8 @@ local function make_query_mapping(show_vertical)
             range = vim.lsp.util.make_given_range_params({lnum1, col1 - 1}, {lnum2, col2 - 1}).range
         end
 
-        vim.lsp.buf_request(
-            0,
+        local client = vim.lsp.get_client_by_id(client_id)
+        client.request(
             'workspace/executeCommand',
             {
                 command = 'executeQuery',
@@ -97,17 +98,18 @@ end
 M.query = make_query_mapping()
 M.query_vertical = make_query_mapping('-show-vertical')
 
----@alias sqls_switch_function fun(query: string)
----@alias sqls_prompt_function fun(switch_function: sqls_switch_function, query?: string)
+---@alias sqls_switch_function fun(client_id: integer, query: string)
+---@alias sqls_prompt_function fun(client_id: integer, switch_function: sqls_switch_function, query?: string)
 ---@alias sqls_answer_formatter fun(answer: string): string
----@alias sqls_switcher fun(query?: string)
+---@alias sqls_switcher fun(client_id: integer, query?: string)
 
+---@param client_id integer
 ---@param switch_function sqls_switch_function
 ---@param answer_formatter sqls_answer_formatter
 ---@param event_name sqls_event_name
 ---@param query? string
 ---@return sqls_lsp_handler
-local function make_choice_handler(switch_function, answer_formatter, event_name, query)
+local function make_choice_handler(client_id, switch_function, answer_formatter, event_name, query)
     return function(err, result, _, _)
         if err then
             vim.notify('sqls: ' .. err.message, vim.log.levels.ERROR)
@@ -123,7 +125,7 @@ local function make_choice_handler(switch_function, answer_formatter, event_name
         local choices = vim.split(result, '\n')
         local function switch_callback(answer)
             if not answer then return end
-            switch_function(answer_formatter(answer))
+            switch_function(client_id, answer_formatter(answer))
             require('sqls.events')._dispatch_event(event_name, {choice = answer})
             ---@diagnostic disable-next-line: redundant-parameter
             nvim_exec_autocmds('User', {
@@ -150,9 +152,9 @@ end
 ---@param command string
 ---@return sqls_switch_function
 local function make_switch_function(command)
-    return function(query)
-        vim.lsp.buf_request(
-            0,
+    return function(client_id, query)
+        local client = vim.lsp.get_client_by_id(client_id)
+        client.request(
             'workspace/executeCommand',
             {
                 command = command,
@@ -168,14 +170,14 @@ end
 ---@param event_name sqls_event_name
 ---@return sqls_prompt_function
 local function make_prompt_function(command, answer_formatter, event_name)
-    return function(switch_function, query)
-        vim.lsp.buf_request(
-            0,
+    return function(client_id, switch_function, query)
+        local client = vim.lsp.get_client_by_id(client_id)
+        client.request(
             'workspace/executeCommand',
             {
                 command = command,
             },
-            make_choice_handler(switch_function, answer_formatter, event_name, query)
+            make_choice_handler(client_id, switch_function, answer_formatter, event_name, query)
             )
     end
 end
@@ -194,8 +196,8 @@ local connection_prompt_function = make_prompt_function('showConnections', forma
 ---@param switch_function sqls_switch_function
 ---@return sqls_switcher
 local function make_switcher(prompt_function, switch_function)
-    return function(query)
-        prompt_function(switch_function, query)
+    return function(client_id, query)
+        prompt_function(client_id, switch_function, query)
     end
 end
 
