@@ -31,7 +31,7 @@ local function make_show_results_handler(mods)
         local bufnr = fn.bufnr(tempfile, true)
         api.nvim_buf_set_lines(bufnr, 0, 1, false, vim.split(result, '\n'))
         vim.cmd(('%s pedit %s'):format(mods or '', tempfile))
-        api.nvim_buf_set_option(bufnr, 'filetype', 'sqls_output')
+        api.nvim_set_option_value('filetype', 'sqls_output', {buf = bufnr})
     end
 end
 
