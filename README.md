@@ -43,4 +43,4 @@ See [sqls-nvim-maps](doc/sqls-nvim.txt#L65)
 
 ## Events
 
-See [sqls-nvim-events](doc/sqls-nvim.txt#L66)
+See [sqls-nvim-events](doc/sqls-nvim.txt#L102)
