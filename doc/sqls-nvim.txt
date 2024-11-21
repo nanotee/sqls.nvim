@@ -62,6 +62,42 @@ MAPS                                            *sqls-nvim-maps*
 <Plug>(sqls-execute-query-vertical)  same as |<Plug>(sqls-execute-query)|, but
                                      the results are displayed vertically
 
+USING MODS
+
+You can customize how the results are displayed by using command modifiers in
+your key mappings. These modifiers allow you to control where and how the
+result buffer appears when executing SQL queries.
+
+Example: Custom Key Mapping with 'botright' Modifier
+
+To display the results in a window at the bottom of your current window, you
+can use the botright modifier in your key mapping.
+
+vim.api.nvim_set_keymap('v', ';eq', ':<C-U>botright \'<,\'>SqlsExecuteQuery<CR>', { noremap = true, silent = true })
+
+Mode: Visual ('v')
+Key Combination: ;eq
+Command: :<C-U> | Clears any existing range or command-line content.
+         botright | Modifier to open the result window at the bottom.
+         '<,'> | Represents the selected range in visual mode.
+         SqlsExecuteQuery | Executes the SQL query within the selected range.
+         <CR> | Executes the command.
+
+
+Available Modifiers:
+
+vertical: Opens the window vertically
+botright: Positions the window at the bottom or right
+aboveleft : Position the window at the top or left
+split: Opens in a horizontal split.
+vsplit: Opens in a vertical split.
+tabnew: Opens in a new tab.
+
+Tips:
+    Combining Modifiers: You can combine modifiers to get the desired window
+    placement, like 'vertical botright'
+    Silent Execution: Add 'silent' before the command to suppress messages.
+
 ==============================================================================
 EVENTS                                          *sqls-nvim-events*
 

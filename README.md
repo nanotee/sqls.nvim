@@ -4,15 +4,15 @@ Neovim plugin for [sqls](https://github.com/lighttiger2505/sqls) that leverages 
 
 ## Installation
 
-- [packer.nvim](https://github.com/wbthomason/packer.nvim)
+-   [packer.nvim](https://github.com/wbthomason/packer.nvim)
     ```lua
     use 'nanotee/sqls.nvim'
     ```
-- [paq-nvim](https://github.com/savq/paq-nvim)
+-   [paq-nvim](https://github.com/savq/paq-nvim)
     ```lua
     paq 'nanotee/sqls.nvim'
     ```
-- [vim-plug](https://github.com/junegunn/vim-plug)
+-   [vim-plug](https://github.com/junegunn/vim-plug)
     ```vim
     Plug 'nanotee/sqls.nvim'
     ```
@@ -36,6 +36,10 @@ See [sqls-nvim-commands](doc/sqls-nvim.txt#L14)
 ## Mappings
 
 See [sqls-nvim-maps](doc/sqls-nvim.txt#L54)
+
+## Mappings Using Mods
+
+See [sqls-nvim-maps](doc/sqls-nvim.txt#L65)
 
 ## Events
 
