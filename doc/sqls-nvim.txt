@@ -17,7 +17,7 @@ COMMANDS                                        *sqls-nvim-commands*
 :SqlsExecuteQuery          In normal mode, executes the query in the current
                            buffer. In visual mode, executes the selected query
                            (only works line-wise). Shows the results in a
-                           preview buffer.
+                           |preview-window|.
 
 
                                                 *:SqlsExecuteQueryVertical*
@@ -26,16 +26,16 @@ COMMANDS                                        *sqls-nvim-commands*
 
 
                                                 *:SqlsShowDatabases*
-:SqlsShowDatabases         Shows a list of available databases in a preview
-                           buffer.
+:SqlsShowDatabases         Shows a list of available databases in a
+                           |preview-window|.
 
                                                 *:SqlsShowSchemas*
-:SqlsShowSchemas           Shows a list of available schemas in a preview
-                           buffer.
+:SqlsShowSchemas           Shows a list of available schemas in a
+                           |preview-window|.
 
                                                 *:SqlsShowConnections*
 :SqlsShowConnections       Shows a list of available database connections in a
-                           preview buffer.
+                           |preview-window|.
 
                                                 *:SqlsSwitchDatabase*
 :SqlsSwitchDatabase {database_name}
