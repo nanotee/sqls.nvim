@@ -34,13 +34,14 @@ end
 ---@param line1? integer
 ---@param line2? integer
 function M.exec(client_id, command, mods, range_given, show_vertical, line1, line2)
+    local client = vim.lsp.get_client_by_id(client_id)
+
     local range
     if range_given then
-        range = vim.lsp.util.make_given_range_params({line1, 0}, {line2, math.huge}).range
+        range = vim.lsp.util.make_given_range_params({line1, 0}, {line2, math.huge}, 0, client.offset_encoding).range
         range['end'].character = range['end'].character - 1
     end
 
-    local client = vim.lsp.get_client_by_id(client_id)
     client.request(
         'workspace/executeCommand',
         {
@@ -66,14 +67,15 @@ local function make_query_mapping(show_vertical)
             return
         end
 
+        local client = vim.lsp.get_client_by_id(client_id)
+
         if type == 'line' then
-            range = vim.lsp.util.make_given_range_params({lnum1, 0}, {lnum2, math.huge}).range
+            range = vim.lsp.util.make_given_range_params({lnum1, 0}, {lnum2, math.huge}, 0, client.offset_encoding).range
             range['end'].character = range['end'].character - 1
         elseif type == 'char' then
-            range = vim.lsp.util.make_given_range_params({lnum1, col1 - 1}, {lnum2, col2 - 1}).range
+            range = vim.lsp.util.make_given_range_params({lnum1, col1 - 1}, {lnum2, col2 - 1}, 0, client.offset_encoding).range
         end
 
-        local client = vim.lsp.get_client_by_id(client_id)
         client.request(
             'workspace/executeCommand',
             {
