@@ -3,15 +3,6 @@ local fn = vim.fn
 
 local nvim_exec_autocmds = api.nvim_exec_autocmds
 
-local legacy_events_to_autocmd_map = {
-    database_choice = 'SqlsDatabaseChoice',
-    connection_choice = 'SqlsConnectionChoice',
-}
-
-local function to_autocmd_event_name(event_name)
-    return legacy_events_to_autocmd_map[event_name]
-end
-
 local M = {}
 
 ---@alias sqls_lsp_handler fun(err?: table, result?: any, ctx: table, config: table)
@@ -102,6 +93,10 @@ M.query_vertical = make_query_mapping('-show-vertical')
 ---@alias sqls_prompt_function fun(client_id: integer, switch_function: sqls_switch_function, query?: string)
 ---@alias sqls_answer_formatter fun(answer: string): string
 ---@alias sqls_switcher fun(client_id: integer, query?: string)
+---@alias sqls_event_name
+---| '"SqlsDatabaseChoice"'
+---| '"SqlsConnectionChoice"'
+
 
 ---@param client_id integer
 ---@param switch_function sqls_switch_function
@@ -126,10 +121,8 @@ local function make_choice_handler(client_id, switch_function, answer_formatter,
         local function switch_callback(answer)
             if not answer then return end
             switch_function(client_id, answer_formatter(answer))
-            require('sqls.events')._dispatch_event(event_name, {choice = answer})
-            ---@diagnostic disable-next-line: redundant-parameter
             nvim_exec_autocmds('User', {
-                pattern = to_autocmd_event_name(event_name),
+                pattern = event_name,
                 data = {choice = answer},
             })
         end
@@ -189,8 +182,8 @@ local function format_connection_answer(answer) return vim.split(answer, ' ')[1]
 
 local database_switch_function = make_switch_function('switchDatabase')
 local connection_switch_function = make_switch_function('switchConnections')
-local database_prompt_function = make_prompt_function('showDatabases', format_database_answer, 'database_choice')
-local connection_prompt_function = make_prompt_function('showConnections', format_connection_answer, 'connection_choice')
+local database_prompt_function = make_prompt_function('showDatabases', format_database_answer, 'SqlsDatabaseChoice')
+local connection_prompt_function = make_prompt_function('showConnections', format_connection_answer, 'SqlsConnectionChoice')
 
 ---@param prompt_function sqls_prompt_function
 ---@param switch_function sqls_switch_function
