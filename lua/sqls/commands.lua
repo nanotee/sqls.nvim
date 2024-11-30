@@ -7,7 +7,7 @@ local M = {}
 
 ---@alias sqls_lsp_handler fun(err?: table, result?: any, ctx: table, config: table)
 
----@param mods string
+---@param mods ?string
 ---@return sqls_lsp_handler
 local function make_show_results_handler(mods)
     return function(err, result, _, _)
@@ -30,7 +30,7 @@ end
 ---@param command string
 ---@param mods? string
 ---@param range_given? boolean
----@param show_vertical? '"-show-vertical"'
+---@param show_vertical? '-show-vertical'
 ---@param line1? integer
 ---@param line2? integer
 function M.exec(client_id, command, mods, range_given, show_vertical, line1, line2)
@@ -53,9 +53,9 @@ function M.exec(client_id, command, mods, range_given, show_vertical, line1, lin
         )
 end
 
----@alias sqls_operatorfunc fun(type: '"block"'|'"line"'|'"char"', client_id: integer)
+---@alias sqls_operatorfunc fun(type: 'block'|'line'|'char', client_id: integer)
 
----@param show_vertical? '"-show-vertical"'
+---@param show_vertical? '-show-vertical'
 ---@return sqls_operatorfunc
 local function make_query_mapping(show_vertical)
     return function(type, client_id)
@@ -96,8 +96,8 @@ M.query_vertical = make_query_mapping('-show-vertical')
 ---@alias sqls_answer_formatter fun(answer: string): string
 ---@alias sqls_switcher fun(client_id: integer, query?: string)
 ---@alias sqls_event_name
----| '"SqlsDatabaseChoice"'
----| '"SqlsConnectionChoice"'
+---| 'SqlsDatabaseChoice'
+---| 'SqlsConnectionChoice'
 
 
 ---@param client_id integer
