@@ -22,10 +22,10 @@ local function make_show_results_handler(smods)
         local bufnr = fn.bufnr(tempfile, true)
         api.nvim_buf_set_lines(bufnr, 0, 1, false, vim.split(result, '\n'))
         vim.cmd.pedit({
-            args = {tempfile},
+            args = { tempfile },
             mods = smods or {},
         })
-        api.nvim_set_option_value('filetype', 'sqls_output', {buf = bufnr})
+        api.nvim_set_option_value('filetype', 'sqls_output', { buf = bufnr })
     end
 end
 
@@ -41,7 +41,12 @@ function M.exec(client_id, command, smods, range_given, show_vertical, line1, li
 
     local range
     if range_given then
-        range = vim.lsp.util.make_given_range_params({line1, 0}, {line2, math.huge}, 0, client.offset_encoding).range
+        range = vim.lsp.util.make_given_range_params(
+            { line1, 0 },
+            { line2, math.huge },
+            0,
+            client.offset_encoding
+        ).range
         range['end'].character = range['end'].character - 1
     end
 
@@ -49,11 +54,11 @@ function M.exec(client_id, command, smods, range_given, show_vertical, line1, li
         'workspace/executeCommand',
         {
             command = command,
-            arguments = {vim.uri_from_bufnr(0), show_vertical},
+            arguments = { vim.uri_from_bufnr(0), show_vertical },
             range = range,
         },
         make_show_results_handler(smods)
-        )
+    )
 end
 
 ---@alias sqls_operatorfunc fun(type: 'block'|'line'|'char', client_id: integer)
@@ -73,21 +78,31 @@ local function make_query_mapping(show_vertical)
         local client = vim.lsp.get_client_by_id(client_id)
 
         if type == 'line' then
-            range = vim.lsp.util.make_given_range_params({lnum1, 0}, {lnum2, math.huge}, 0, client.offset_encoding).range
+            range = vim.lsp.util.make_given_range_params(
+                { lnum1, 0 },
+                { lnum2, math.huge },
+                0,
+                client.offset_encoding
+            ).range
             range['end'].character = range['end'].character - 1
         elseif type == 'char' then
-            range = vim.lsp.util.make_given_range_params({lnum1, col1 - 1}, {lnum2, col2 - 1}, 0, client.offset_encoding).range
+            range = vim.lsp.util.make_given_range_params(
+                { lnum1, col1 - 1 },
+                { lnum2, col2 - 1 },
+                0,
+                client.offset_encoding
+            ).range
         end
 
         client.request(
             'workspace/executeCommand',
             {
                 command = 'executeQuery',
-                arguments = {vim.uri_from_bufnr(0), show_vertical},
+                arguments = { vim.uri_from_bufnr(0), show_vertical },
                 range = range,
             },
             make_show_results_handler()
-            )
+        )
     end
 end
 
@@ -128,7 +143,7 @@ local function make_choice_handler(client_id, switch_function, answer_formatter,
             switch_function(client_id, answer_formatter(answer))
             nvim_exec_autocmds('User', {
                 pattern = event_name,
-                data = {choice = answer},
+                data = { choice = answer },
             })
         end
         if query then
@@ -136,7 +151,7 @@ local function make_choice_handler(client_id, switch_function, answer_formatter,
             switch_callback(answer)
             return
         end
-        vim.ui.select(choices, {prompt = 'sqls.nvim'}, switch_callback)
+        vim.ui.select(choices, { prompt = 'sqls.nvim' }, switch_callback)
     end
 end
 
@@ -156,10 +171,10 @@ local function make_switch_function(command)
             'workspace/executeCommand',
             {
                 command = command,
-                arguments = {query},
+                arguments = { query },
             },
             switch_handler
-            )
+        )
     end
 end
 
@@ -176,7 +191,7 @@ local function make_prompt_function(command, answer_formatter, event_name)
                 command = command,
             },
             make_choice_handler(client_id, switch_function, answer_formatter, event_name, query)
-            )
+        )
     end
 end
 
@@ -187,8 +202,16 @@ local function format_connection_answer(answer) return vim.split(answer, ' ')[1]
 
 local database_switch_function = make_switch_function('switchDatabase')
 local connection_switch_function = make_switch_function('switchConnections')
-local database_prompt_function = make_prompt_function('showDatabases', format_database_answer, 'SqlsDatabaseChoice')
-local connection_prompt_function = make_prompt_function('showConnections', format_connection_answer, 'SqlsConnectionChoice')
+local database_prompt_function = make_prompt_function(
+    'showDatabases',
+    format_database_answer,
+    'SqlsDatabaseChoice'
+)
+local connection_prompt_function = make_prompt_function(
+    'showConnections',
+    format_connection_answer,
+    'SqlsConnectionChoice'
+)
 
 ---@param prompt_function sqls_prompt_function
 ---@param switch_function sqls_switch_function

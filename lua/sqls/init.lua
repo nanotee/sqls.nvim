@@ -4,15 +4,31 @@ local api = vim.api
 
 M.on_attach = function(client, bufnr)
     client.server_capabilities.executeCommandProvider = true
-    client.server_capabilities.codeActionProvider = {resolveProvider = false}
+    client.server_capabilities.codeActionProvider = { resolveProvider = false }
 
     client.commands = M.commands
     local client_id = client.id
     api.nvim_buf_create_user_command(bufnr, 'SqlsExecuteQuery', function(args)
-        require('sqls.commands').exec(client_id, 'executeQuery', args.smods, args.range ~= 0, nil, args.line1, args.line2)
+        require('sqls.commands').exec(
+            client_id,
+            'executeQuery',
+            args.smods,
+            args.range ~= 0,
+            nil,
+            args.line1,
+            args.line2
+        )
     end, { range = true })
     api.nvim_buf_create_user_command(bufnr, 'SqlsExecuteQueryVertical', function(args)
-        require('sqls.commands').exec(client_id, 'executeQuery', args.smods, args.range ~= 0, '-show-vertical', args.line1, args.line2)
+        require('sqls.commands').exec(
+            client_id,
+            'executeQuery',
+            args.smods,
+            args.range ~= 0,
+            '-show-vertical',
+            args.line1,
+            args.line2
+        )
     end, { range = true })
     api.nvim_buf_create_user_command(bufnr, 'SqlsShowDatabases', function(args)
         require('sqls.commands').exec(client_id, 'showDatabases', args.smods)
@@ -37,10 +53,34 @@ M.on_attach = function(client, bufnr)
         require('sqls.commands').switch_connection(client_id, args.args ~= '' and args.args or nil)
     end, { nargs = '?' })
 
-    api.nvim_buf_set_keymap(bufnr, 'n', '<Plug>(sqls-execute-query)', "<Cmd>let &opfunc='{type -> sqls_nvim#query(type, " .. client_id .. ")}'<CR>g@", {silent = true})
-    api.nvim_buf_set_keymap(bufnr, 'x', '<Plug>(sqls-execute-query)', "<Cmd>let &opfunc='{type -> sqls_nvim#query(type, " .. client_id .. ")}'<CR>g@", {silent = true})
-    api.nvim_buf_set_keymap(bufnr, 'n', '<Plug>(sqls-execute-query-vertical)', "<Cmd>let &opfunc='{type -> sqls_nvim#query_vertical(type, " .. client_id .. ")}'<CR>g@", {silent = true})
-    api.nvim_buf_set_keymap(bufnr, 'x', '<Plug>(sqls-execute-query-vertical)', "<Cmd>let &opfunc='{type -> sqls_nvim#query_vertical(type, " .. client_id .. ")}'<CR>g@", {silent = true})
+    api.nvim_buf_set_keymap(
+        bufnr,
+        'n',
+        '<Plug>(sqls-execute-query)',
+        "<Cmd>let &opfunc='{type -> sqls_nvim#query(type, " .. client_id .. ")}'<CR>g@",
+        { silent = true }
+    )
+    api.nvim_buf_set_keymap(
+        bufnr,
+        'x',
+        '<Plug>(sqls-execute-query)',
+        "<Cmd>let &opfunc='{type -> sqls_nvim#query(type, " .. client_id .. ")}'<CR>g@",
+        { silent = true }
+    )
+    api.nvim_buf_set_keymap(
+        bufnr,
+        'n',
+        '<Plug>(sqls-execute-query-vertical)',
+        "<Cmd>let &opfunc='{type -> sqls_nvim#query_vertical(type, " .. client_id .. ")}'<CR>g@",
+        { silent = true }
+    )
+    api.nvim_buf_set_keymap(
+        bufnr,
+        'x',
+        '<Plug>(sqls-execute-query-vertical)',
+        "<Cmd>let &opfunc='{type -> sqls_nvim#query_vertical(type, " .. client_id .. ")}'<CR>g@",
+        { silent = true }
+    )
 end
 
 M.commands = {
