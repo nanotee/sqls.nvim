@@ -5,12 +5,10 @@ local nvim_exec_autocmds = api.nvim_exec_autocmds
 
 local M = {}
 
----@alias sqls_lsp_handler fun(err?: table, result?: any, ctx: table, config: table)
-
 ---@param smods? vim.api.keyset.parse_cmd.mods
----@return sqls_lsp_handler
+---@return lsp.Handler
 local function make_show_results_handler(smods)
-    return function(err, result, _, _)
+    return function(err, result, _)
         if err then
             vim.notify('sqls: ' .. err.message, vim.log.levels.ERROR)
             return
@@ -123,9 +121,9 @@ M.query_vertical = make_query_mapping('-show-vertical')
 ---@param answer_formatter sqls_answer_formatter
 ---@param event_name sqls_event_name
 ---@param query? string
----@return sqls_lsp_handler
+---@return lsp.Handler
 local function make_choice_handler(client_id, switch_function, answer_formatter, event_name, query)
-    return function(err, result, _, _)
+    return function(err, result, _)
         if err then
             vim.notify('sqls: ' .. err.message, vim.log.levels.ERROR)
             return
@@ -155,8 +153,8 @@ local function make_choice_handler(client_id, switch_function, answer_formatter,
     end
 end
 
----@type sqls_lsp_handler
-local function switch_handler(err, _, _, _)
+---@type lsp.Handler
+local function switch_handler(err, _, _)
     if err then
         vim.notify('sqls: ' .. err.message, vim.log.levels.ERROR)
     end
