@@ -7,9 +7,9 @@ local M = {}
 
 ---@alias sqls_lsp_handler fun(err?: table, result?: any, ctx: table, config: table)
 
----@param mods ?string
+---@param smods? vim.api.keyset.parse_cmd.mods
 ---@return sqls_lsp_handler
-local function make_show_results_handler(mods)
+local function make_show_results_handler(smods)
     return function(err, result, _, _)
         if err then
             vim.notify('sqls: ' .. err.message, vim.log.levels.ERROR)
@@ -21,19 +21,22 @@ local function make_show_results_handler(mods)
         local tempfile = fn.tempname() .. '.sqls_output'
         local bufnr = fn.bufnr(tempfile, true)
         api.nvim_buf_set_lines(bufnr, 0, 1, false, vim.split(result, '\n'))
-        vim.cmd(('%s pedit %s'):format(mods or '', tempfile))
+        vim.cmd.pedit({
+            args = {tempfile},
+            mods = smods or {},
+        })
         api.nvim_set_option_value('filetype', 'sqls_output', {buf = bufnr})
     end
 end
 
 ---@param client_id integer
 ---@param command string
----@param mods? string
+---@param smods? vim.api.keyset.parse_cmd.mods
 ---@param range_given? boolean
 ---@param show_vertical? '-show-vertical'
 ---@param line1? integer
 ---@param line2? integer
-function M.exec(client_id, command, mods, range_given, show_vertical, line1, line2)
+function M.exec(client_id, command, smods, range_given, show_vertical, line1, line2)
     local client = vim.lsp.get_client_by_id(client_id)
 
     local range
@@ -49,7 +52,7 @@ function M.exec(client_id, command, mods, range_given, show_vertical, line1, lin
             arguments = {vim.uri_from_bufnr(0), show_vertical},
             range = range,
         },
-        make_show_results_handler(mods)
+        make_show_results_handler(smods)
         )
 end
 
@@ -83,7 +86,7 @@ local function make_query_mapping(show_vertical)
                 arguments = {vim.uri_from_bufnr(0), show_vertical},
                 range = range,
             },
-            make_show_results_handler('')
+            make_show_results_handler()
             )
     end
 end
