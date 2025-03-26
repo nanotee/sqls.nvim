@@ -19,7 +19,18 @@ Neovim plugin for [sqls](https://github.com/lighttiger2505/sqls) that leverages 
 
 ## Usage
 
-Setup the plugin with [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig)
+If you're using Neovim 0.11 and above, you can simply enable the configuration with [`vim.lsp.enable()`](https://neovim.io/doc/user/lsp.html#vim.lsp.enable()) and [`vim.lsp.config()`](https://neovim.io/doc/user/lsp.html#vim.lsp.config())
+
+```lua
+vim.lsp.config('sqls', {
+    -- your custom client configuration
+})
+vim.lsp.enable('sqls')
+```
+
+See also: [`lsp-config`](https://neovim.io/doc/user/lsp.html#lsp-config)
+
+For older versions, setup the plugin with [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig)
 
 ```lua
 require('lspconfig').sqls.setup{
