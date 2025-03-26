@@ -49,7 +49,7 @@ function M.exec(client_id, command, smods, range_given, show_vertical, line1, li
     end
 
     client.request(
-        'workspace/executeCommand',
+        vim.lsp.protocol.Methods.workspace_executeCommand,
         {
             command = command,
             arguments = { vim.uri_from_bufnr(0), show_vertical },
@@ -93,7 +93,7 @@ local function make_query_mapping(show_vertical)
         end
 
         client.request(
-            'workspace/executeCommand',
+            vim.lsp.protocol.Methods.workspace_executeCommand,
             {
                 command = 'executeQuery',
                 arguments = { vim.uri_from_bufnr(0), show_vertical },
@@ -166,7 +166,7 @@ local function make_switch_function(command)
     return function(client_id, query)
         local client = assert(vim.lsp.get_client_by_id(client_id))
         client.request(
-            'workspace/executeCommand',
+            vim.lsp.protocol.Methods.workspace_executeCommand,
             {
                 command = command,
                 arguments = { query },
@@ -184,7 +184,7 @@ local function make_prompt_function(command, answer_formatter, event_name)
     return function(client_id, switch_function, query)
         local client = assert(vim.lsp.get_client_by_id(client_id))
         client.request(
-            'workspace/executeCommand',
+            vim.lsp.protocol.Methods.workspace_executeCommand,
             {
                 command = command,
             },
