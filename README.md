@@ -1,6 +1,6 @@
 # sqls.nvim
 
-Neovim plugin for [sqls](https://github.com/lighttiger2505/sqls) that leverages the built-in LSP client. Loosely based on the code from [sqls.vim](https://github.com/lighttiger2505/sqls.vim). Requires Neovim 0.8.0+
+Neovim plugin for [sqls](https://github.com/lighttiger2505/sqls) that leverages the built-in LSP client. Loosely based on the code from [sqls.vim](https://github.com/lighttiger2505/sqls.vim). Requires Neovim 0.10.0+
 
 ## Installation
 
