@@ -35,7 +35,7 @@ end
 ---@param line1? integer
 ---@param line2? integer
 function M.exec(client_id, command, smods, range_given, show_vertical, line1, line2)
-    local client = vim.lsp.get_client_by_id(client_id)
+    local client = assert(vim.lsp.get_client_by_id(client_id))
 
     local range
     if range_given then
@@ -73,7 +73,7 @@ local function make_query_mapping(show_vertical)
             return
         end
 
-        local client = vim.lsp.get_client_by_id(client_id)
+        local client = assert(vim.lsp.get_client_by_id(client_id))
 
         if type == 'line' then
             range = vim.lsp.util.make_given_range_params(
@@ -164,7 +164,7 @@ end
 ---@return sqls_switch_function
 local function make_switch_function(command)
     return function(client_id, query)
-        local client = vim.lsp.get_client_by_id(client_id)
+        local client = assert(vim.lsp.get_client_by_id(client_id))
         client.request(
             'workspace/executeCommand',
             {
@@ -182,7 +182,7 @@ end
 ---@return sqls_prompt_function
 local function make_prompt_function(command, answer_formatter, event_name)
     return function(client_id, switch_function, query)
-        local client = vim.lsp.get_client_by_id(client_id)
+        local client = assert(vim.lsp.get_client_by_id(client_id))
         client.request(
             'workspace/executeCommand',
             {
