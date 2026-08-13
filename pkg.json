@@ -1,0 +1,7 @@
+{
+    "name": "sqls.nvim",
+    "description": "Neovim plugin for sqls that leverages the built-in LSP client",
+    "engines": {
+        "nvim": ">=0.11.0"
+    }
+}
