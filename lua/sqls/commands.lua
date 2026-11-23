@@ -49,7 +49,8 @@ local function make_show_results_handler(smods, markdown)
             args = { tempfile },
             mods = smods or {},
         })
-        if markdown then
+        -- an older sqls ignores `-markdown`, and some output (such as `Query OK`) has no table
+        if markdown and result:find('\n|:%-') then
             api.nvim_set_option_value('filetype', 'markdown', { buf = bufnr })
             vim.bo[bufnr].modifiable = false
             vim.bo[bufnr].modified = false
@@ -57,7 +58,7 @@ local function make_show_results_handler(smods, markdown)
             vim.bo[bufnr].buflisted = false
             local winid = fn.bufwinid(bufnr)
             if winid ~= -1 then
-                vim.wo[winid].wrap = false
+                vim.wo[winid][0].wrap = false
             end
         else
             api.nvim_set_option_value('filetype', 'sqls_output', { buf = bufnr })
