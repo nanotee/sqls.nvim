@@ -10,6 +10,22 @@ Enable the configuration with |vim.lsp.enable()| and |vim.lsp.config()|
     vim.lsp.enable('sqls')
 <
 See also: |lsp-config|
+
+==============================================================================
+CONFIGURATION                                   *sqls-nvim-config*
+
+                                                *g:sqls_nvim*
+g:sqls_nvim                A table of options, which may be set at any time:
+>lua
+    vim.g.sqls_nvim = { markdown_output = true }
+<
+                           • markdown_output: (boolean, default false)
+                             Render tabular query results as a Markdown table
+                             and set the 'filetype' of the |preview-window|
+                             to `markdown`. Results from
+                             |:SqlsExecuteQueryVertical| and output that is
+                             not a table keep the `sqls_output` filetype.
+
 ==============================================================================
 COMMANDS                                        *sqls-nvim-commands*
 

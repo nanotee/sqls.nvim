@@ -5,9 +5,80 @@ local nvim_exec_autocmds = api.nvim_exec_autocmds
 
 local M = {}
 
+---@return boolean
+local function markdown_output_enabled()
+    local config = vim.g.sqls_nvim
+    return type(config) == 'table' and config.markdown_output == true
+end
+
+local TABLE_BORDER_CHARS = {}
+for _, c in ipairs(fn.split('+-─═┌┬┐├┼┤└┴┘╭╮╰╯╞╪╡╒╤╕╘╧╛╔╦╗╠╬╣╚╩╝', '\\zs')) do
+    TABLE_BORDER_CHARS[c] = true
+end
+local TABLE_ROW_CHARS = { ['|'] = true, ['│'] = true, ['║'] = true }
+
+---A border is a line made up only of border characters, so text that merely starts with one (such as `+1 row affected`) isn't dropped.
+---@param line string
+---@return boolean
+local function is_table_border(line)
+    if line == '' then
+        return false
+    end
+    for _, c in ipairs(fn.split(line, '\\zs')) do
+        if not TABLE_BORDER_CHARS[c] then
+            return false
+        end
+    end
+    return true
+end
+
+---Converts the table printed by sqls (ASCII or box-drawing characters) to a Markdown table. Returns nil if the result contains no table.
+---@param result string
+---@return string?
+local function table_to_markdown(result)
+    local out = {}
+    local found_table = false
+    local in_table = false
+    for _, line in ipairs(vim.split(result, '\n')) do
+        local first = fn.strcharpart(line, 0, 1)
+        if TABLE_ROW_CHARS[first] then
+            local trimmed = vim.trim(line)
+            local inner = fn.strcharpart(trimmed, 1, fn.strchars(trimmed) - 2)
+            local cells = vim.split(inner, first, { plain = true })
+            for i, cell in ipairs(cells) do
+                cells[i] = (vim.trim(cell):gsub('|', '\\|'))
+            end
+            if not in_table then
+                -- always start the table on a new line, so it renders as a table
+                if out[#out] ~= '' then
+                    out[#out + 1] = ''
+                end
+                in_table = true
+                found_table = true
+                out[#out + 1] = '| ' .. table.concat(cells, ' | ') .. ' |'
+                out[#out + 1] = '|' .. string.rep(' --- |', #cells)
+            else
+                out[#out + 1] = '| ' .. table.concat(cells, ' | ') .. ' |'
+            end
+        elseif not is_table_border(line) then
+            if in_table and line ~= '' then
+                -- a blank line is required to end the table, otherwise the line becomes a row
+                out[#out + 1] = ''
+            end
+            in_table = false
+            out[#out + 1] = line
+        end
+    end
+    if not found_table then
+        return nil
+    end
+    return table.concat(out, '\n')
+end
+
 ---@param smods? vim.api.keyset.cmd.mods
+---@param show_vertical? '-show-vertical'
 ---@return lsp.Handler
-local function make_show_results_handler(smods)
+local function make_show_results_handler(smods, show_vertical)
     return function(err, result, _)
         if err then
             vim.notify('sqls: ' .. err.message, vim.log.levels.ERROR)
@@ -16,14 +87,30 @@ local function make_show_results_handler(smods)
         if not result then
             return
         end
+        local markdown
+        if markdown_output_enabled() and not show_vertical then
+            markdown = table_to_markdown(result)
+        end
         local tempfile = fn.tempname() .. '.sqls_output'
         local bufnr = fn.bufnr(tempfile, true)
-        api.nvim_buf_set_lines(bufnr, 0, 1, false, vim.split(result, '\n'))
+        api.nvim_buf_set_lines(bufnr, 0, 1, false, vim.split(markdown or result, '\n'))
         vim.cmd.pedit({
             args = { tempfile },
             mods = smods or {},
         })
-        api.nvim_set_option_value('filetype', 'sqls_output', { buf = bufnr })
+        if markdown then
+            api.nvim_set_option_value('filetype', 'markdown', { buf = bufnr })
+            vim.bo[bufnr].modifiable = false
+            vim.bo[bufnr].modified = false
+            vim.bo[bufnr].readonly = true
+            vim.bo[bufnr].buflisted = false
+            local winid = fn.bufwinid(bufnr)
+            if winid ~= -1 then
+                vim.wo[winid].wrap = false
+            end
+        else
+            api.nvim_set_option_value('filetype', 'sqls_output', { buf = bufnr })
+        end
     end
 end
 
@@ -57,7 +144,7 @@ function M.exec(client_id, command, smods, range_given, show_vertical, line1, li
             arguments = { vim.uri_from_bufnr(bufnr), show_vertical },
             range = range,
         },
-        make_show_results_handler(smods)
+        make_show_results_handler(smods, show_vertical)
     )
 end
 
@@ -102,7 +189,7 @@ local function make_query_mapping(show_vertical)
                 arguments = { vim.uri_from_bufnr(bufnr), show_vertical },
                 range = range,
             },
-            make_show_results_handler()
+            make_show_results_handler(nil, show_vertical)
         )
     end
 end
