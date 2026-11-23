@@ -5,9 +5,35 @@ local nvim_exec_autocmds = api.nvim_exec_autocmds
 
 local M = {}
 
+---@return boolean
+local function markdown_output_enabled()
+    local config = vim.g.sqls_nvim
+    return type(config) == 'table' and config.markdown_output == true
+end
+
+---Built up by appending, as a `nil` `show_vertical` would otherwise leave a hole in the list.
+---Only `executeQuery` produces a table, and `-show-vertical` has no table to convert.
+---@param bufnr integer
+---@param command string
+---@param show_vertical? '-show-vertical'
+---@return string[] arguments
+---@return boolean markdown whether the server is being asked for a Markdown table
+local function make_arguments(bufnr, command, show_vertical)
+    local arguments = { vim.uri_from_bufnr(bufnr) }
+    if show_vertical then
+        arguments[#arguments + 1] = show_vertical
+    end
+    local markdown = command == 'executeQuery' and not show_vertical and markdown_output_enabled()
+    if markdown then
+        arguments[#arguments + 1] = '-markdown'
+    end
+    return arguments, markdown
+end
+
 ---@param smods? vim.api.keyset.cmd.mods
+---@param markdown? boolean whether the server was asked for a Markdown table
 ---@return lsp.Handler
-local function make_show_results_handler(smods)
+local function make_show_results_handler(smods, markdown)
     return function(err, result, _)
         if err then
             vim.notify('sqls: ' .. err.message, vim.log.levels.ERROR)
@@ -23,7 +49,19 @@ local function make_show_results_handler(smods)
             args = { tempfile },
             mods = smods or {},
         })
-        api.nvim_set_option_value('filetype', 'sqls_output', { buf = bufnr })
+        if markdown then
+            api.nvim_set_option_value('filetype', 'markdown', { buf = bufnr })
+            vim.bo[bufnr].modifiable = false
+            vim.bo[bufnr].modified = false
+            vim.bo[bufnr].readonly = true
+            vim.bo[bufnr].buflisted = false
+            local winid = fn.bufwinid(bufnr)
+            if winid ~= -1 then
+                vim.wo[winid].wrap = false
+            end
+        else
+            api.nvim_set_option_value('filetype', 'sqls_output', { buf = bufnr })
+        end
     end
 end
 
@@ -50,14 +88,15 @@ function M.exec(client_id, command, smods, range_given, show_vertical, line1, li
         range['end'].character = range['end'].character - 1
     end
 
+    local arguments, markdown = make_arguments(bufnr, command, show_vertical)
     client:request(
         'workspace/executeCommand',
         {
             command = command,
-            arguments = { vim.uri_from_bufnr(bufnr), show_vertical },
+            arguments = arguments,
             range = range,
         },
-        make_show_results_handler(smods)
+        make_show_results_handler(smods, markdown)
     )
 end
 
@@ -95,14 +134,15 @@ local function make_query_mapping(show_vertical)
             ).range
         end
 
+        local arguments, markdown = make_arguments(bufnr, 'executeQuery', show_vertical)
         client:request(
             'workspace/executeCommand',
             {
                 command = 'executeQuery',
-                arguments = { vim.uri_from_bufnr(bufnr), show_vertical },
+                arguments = arguments,
                 range = range,
             },
-            make_show_results_handler()
+            make_show_results_handler(nil, markdown)
         )
     end
 end
