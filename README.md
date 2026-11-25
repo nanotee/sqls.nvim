@@ -21,14 +21,29 @@ vim.lsp.enable('sqls')
 
 See also: [`lsp-config`](https://neovim.io/doc/user/lsp.html#lsp-config)
 
+## Configuration
+
+```lua
+vim.g.sqls_nvim = {
+    -- render query results as a Markdown table (default: false)
+    markdown_output = true,
+}
+```
+
+Alternatively, call `require('sqls').setup({ markdown_output = true })`, which is what plugin managers like lazy.nvim do with `opts`.
+
+Requires a version of `sqls` that supports the `-markdown` argument to `executeQuery`.
+
+See [sqls-nvim-config](doc/sqls-nvim.txt#L15)
+
 ## Commands
 
-See [sqls-nvim-commands](doc/sqls-nvim.txt#L14)
+See [sqls-nvim-commands](doc/sqls-nvim.txt#L38)
 
 ## Mappings
 
-See [sqls-nvim-maps](doc/sqls-nvim.txt#L54)
+See [sqls-nvim-maps](doc/sqls-nvim.txt#L78)
 
 ## Events
 
-See [sqls-nvim-events](doc/sqls-nvim.txt#L66)
+See [sqls-nvim-events](doc/sqls-nvim.txt#L90)
